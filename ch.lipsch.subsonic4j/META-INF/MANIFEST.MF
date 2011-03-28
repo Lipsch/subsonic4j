@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Subsonic 4 java
+Bundle-SymbolicName: ch.lipsch.subsonic4j
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Erwin Betschart
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: .
+Require-Bundle: org.apache.commons.httpclient;bundle-version="3.1.0"
+Export-Package: ch.lipsch.subsonic4j,
+ ch.lipsch.subsonic4j.model,
+ ch.lipsch.subsonic4j.tools
