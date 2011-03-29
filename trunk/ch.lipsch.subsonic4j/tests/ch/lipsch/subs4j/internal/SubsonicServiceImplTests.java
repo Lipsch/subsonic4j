@@ -36,7 +36,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.subsonic.restapi.AlbumList;
-import org.subsonic.restapi.ChatMessages;
 import org.subsonic.restapi.Child;
 import org.subsonic.restapi.Lyrics;
 import org.subsonic.restapi.NowPlaying;
@@ -54,6 +53,7 @@ import ch.lipsch.subsonic4j.SubsonicException;
 import ch.lipsch.subsonic4j.SubsonicFactory;
 import ch.lipsch.subsonic4j.SubsonicService;
 import ch.lipsch.subsonic4j.model.Artist;
+import ch.lipsch.subsonic4j.model.ChatMessage;
 import ch.lipsch.subsonic4j.model.Directory;
 import ch.lipsch.subsonic4j.model.Index;
 import ch.lipsch.subsonic4j.model.License;
@@ -580,15 +580,17 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 	@Test
 	public void testGetChatMessagesSince() throws SubsonicException {
-		long time = System.currentTimeMillis();
+		Calendar time = Calendar.getInstance();
+		time.setTimeInMillis(System.currentTimeMillis());
 
 		addChatMessage("testGetChatMessagesSince");
 
-		assertEquals(getChatMessages(time).getChatMessage().size(), 1);
+		assertEquals(getChatMessages(time).size(), 1);
 	}
 
 	@Override
-	public ChatMessages getChatMessages(Long since) throws SubsonicException {
+	public List<ChatMessage> getChatMessages(Calendar since)
+			throws SubsonicException {
 		return subsonicServiceForUser1.getChatMessages(since);
 	}
 

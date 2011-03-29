@@ -22,7 +22,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.subsonic.restapi.AlbumList;
-import org.subsonic.restapi.ChatMessages;
 import org.subsonic.restapi.Lyrics;
 import org.subsonic.restapi.NowPlaying;
 import org.subsonic.restapi.Playlist;
@@ -32,6 +31,7 @@ import org.subsonic.restapi.SearchResult2;
 import org.subsonic.restapi.User;
 
 import ch.lipsch.subsonic4j.model.Artist;
+import ch.lipsch.subsonic4j.model.ChatMessage;
 import ch.lipsch.subsonic4j.model.Index;
 import ch.lipsch.subsonic4j.model.License;
 import ch.lipsch.subsonic4j.model.MusicFolder;
@@ -183,7 +183,8 @@ public interface SubsonicService {
 	 * @since 1.0.0
 	 * @throws SubsonicException
 	 */
-	public ch.lipsch.subsonic4j.model.Directory getMusicDirectory(String folderId);
+	public ch.lipsch.subsonic4j.model.Directory getMusicDirectory(
+			String folderId);
 
 	/**
 	 * Returns albums, artists and songs matching the given search criteria.
@@ -411,13 +412,14 @@ public interface SubsonicService {
 	 * Returns the current visible (non-expired) chat messages.
 	 * 
 	 * @param since
-	 *            Only return messages newer than this time (in millis since Jan
-	 *            1 1970). May be <code>null</code>.
+	 *            Only return messages newer than this time. May be
+	 *            <code>null</code>.
 	 * @return
 	 * @since 1.2.0
 	 * @throws SubsonicException
 	 */
-	public ChatMessages getChatMessages(Long since) throws SubsonicException;
+	public List<ChatMessage> getChatMessages(Calendar since)
+			throws SubsonicException;
 
 	/**
 	 * Adds a message to the chat log.

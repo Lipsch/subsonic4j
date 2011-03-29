@@ -47,7 +47,6 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.subsonic.restapi.AlbumList;
-import org.subsonic.restapi.ChatMessages;
 import org.subsonic.restapi.Lyrics;
 import org.subsonic.restapi.NowPlaying;
 import org.subsonic.restapi.Playlist;
@@ -60,9 +59,10 @@ import org.subsonic.restapi.User;
 import ch.lipsch.subsonic4j.CredentialsProvider;
 import ch.lipsch.subsonic4j.StreamListener;
 import ch.lipsch.subsonic4j.SubsonicException;
-import ch.lipsch.subsonic4j.SubsonicService;
 import ch.lipsch.subsonic4j.SubsonicException.ErrorType;
+import ch.lipsch.subsonic4j.SubsonicService;
 import ch.lipsch.subsonic4j.model.Artist;
+import ch.lipsch.subsonic4j.model.ChatMessage;
 import ch.lipsch.subsonic4j.model.Index;
 import ch.lipsch.subsonic4j.model.License;
 import ch.lipsch.subsonic4j.model.MusicFolder;
@@ -349,7 +349,8 @@ public class SubsonicServiceImpl implements SubsonicService {
 	}
 
 	@Override
-	public ch.lipsch.subsonic4j.model.Directory getMusicDirectory(String folderId) {
+	public ch.lipsch.subsonic4j.model.Directory getMusicDirectory(
+			String folderId) {
 		String restifiedUrl = SubsonicUtil.restifySubsonicUrl(getUrl(),
 				PATH_GET_MUSIC_DIR);
 		restifiedUrl = SubsonicUtil.appendCredentialsAsFirstParam(restifiedUrl,
@@ -614,18 +615,20 @@ public class SubsonicServiceImpl implements SubsonicService {
 	}
 
 	@Override
-	public ChatMessages getChatMessages(Long since) throws SubsonicException {
+	public List<ChatMessage> getChatMessages(Calendar since)
+			throws SubsonicException {
 		throwIfDisposed();
 		String restifiedUrl = SubsonicUtil.restifySubsonicUrl(getUrl(),
 				PATH_GET_CHAT_MESSAGE);
 		restifiedUrl = SubsonicUtil.appendCredentialsAsFirstParam(restifiedUrl,
 				getCredentialsProvider());
 		restifiedUrl = SubsonicUtil.appendIfSet(restifiedUrl, "since",
-				since == null ? null : since.toString());
+				since == null ? null : Long.toString(since.getTimeInMillis()));
 
 		Response response;
 		response = fetchResponse(restifiedUrl);
-		return response.getChatMessages();
+		return Jaxb2ModelFactory.createChatMessages(response.getChatMessages(),
+				this);
 	}
 
 	private synchronized URL getUrl() {
