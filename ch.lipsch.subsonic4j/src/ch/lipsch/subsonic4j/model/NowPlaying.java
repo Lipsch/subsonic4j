@@ -18,11 +18,13 @@
  */
 package ch.lipsch.subsonic4j.model;
 
-public interface Song extends SubsonicModelObject {
+public interface NowPlaying extends SubsonicModelObject {
 
-	public String getTitle();
+	public String getUsername();
 
-	public String getId();
+	public int getMinutesAgo();
 
-	public String getGenre();
+	public String getPlayerName();
+
+	public Song getPlayedSong();
 }

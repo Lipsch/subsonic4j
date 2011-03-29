@@ -48,10 +48,8 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.subsonic.restapi.AlbumList;
 import org.subsonic.restapi.Lyrics;
-import org.subsonic.restapi.NowPlaying;
 import org.subsonic.restapi.Playlist;
 import org.subsonic.restapi.Playlists;
-import org.subsonic.restapi.RandomSongs;
 import org.subsonic.restapi.Response;
 import org.subsonic.restapi.SearchResult2;
 import org.subsonic.restapi.User;
@@ -66,6 +64,8 @@ import ch.lipsch.subsonic4j.model.ChatMessage;
 import ch.lipsch.subsonic4j.model.Index;
 import ch.lipsch.subsonic4j.model.License;
 import ch.lipsch.subsonic4j.model.MusicFolder;
+import ch.lipsch.subsonic4j.model.NowPlaying;
+import ch.lipsch.subsonic4j.model.Song;
 import ch.lipsch.subsonic4j.tools.StateChecker;
 
 /**
@@ -296,7 +296,7 @@ public class SubsonicServiceImpl implements SubsonicService {
 	}
 
 	@Override
-	public NowPlaying getNowPlaying() throws SubsonicException {
+	public List<NowPlaying> getNowPlaying() throws SubsonicException {
 		throwIfDisposed();
 		String restifiedUrl = SubsonicUtil.restifySubsonicUrl(getUrl(),
 				PATH_GET_NOW_PLAYING);
@@ -305,7 +305,8 @@ public class SubsonicServiceImpl implements SubsonicService {
 
 		Response response;
 		response = fetchResponse(restifiedUrl);
-		return response.getNowPlaying();
+		return Jaxb2ModelFactory.createNowPlaying(response.getNowPlaying(),
+				this);
 	}
 
 	@Override
@@ -669,12 +670,12 @@ public class SubsonicServiceImpl implements SubsonicService {
 	}
 
 	@Override
-	public RandomSongs getRandomSongs() throws SubsonicException {
+	public List<Song> getRandomSongs() throws SubsonicException {
 		return getRandomSongs(null, null, null, null, null);
 	}
 
 	@Override
-	public RandomSongs getRandomSongs(Integer size, String genre,
+	public List<Song> getRandomSongs(Integer size, String genre,
 			Integer fromYear, Integer toYear, MusicFolder musicFolder)
 			throws SubsonicException {
 		throwIfDisposed();
@@ -696,7 +697,7 @@ public class SubsonicServiceImpl implements SubsonicService {
 
 		Response response;
 		response = fetchResponse(restifiedUrl);
-		return response.getRandomSongs();
+		return Jaxb2ModelFactory.createSongs(response.getRandomSongs(), this);
 	}
 
 	private synchronized CredentialsProvider getCredentialsProvider() {

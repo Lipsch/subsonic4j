@@ -36,14 +36,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.subsonic.restapi.AlbumList;
-import org.subsonic.restapi.Child;
 import org.subsonic.restapi.Lyrics;
-import org.subsonic.restapi.NowPlaying;
-import org.subsonic.restapi.NowPlayingEntry;
 import org.subsonic.restapi.Playlist;
 import org.subsonic.restapi.PlaylistIdAndName;
 import org.subsonic.restapi.Playlists;
-import org.subsonic.restapi.RandomSongs;
 import org.subsonic.restapi.SearchResult2;
 import org.subsonic.restapi.User;
 
@@ -58,6 +54,8 @@ import ch.lipsch.subsonic4j.model.Directory;
 import ch.lipsch.subsonic4j.model.Index;
 import ch.lipsch.subsonic4j.model.License;
 import ch.lipsch.subsonic4j.model.MusicFolder;
+import ch.lipsch.subsonic4j.model.NowPlaying;
+import ch.lipsch.subsonic4j.model.Song;
 import ch.lipsch.subsonic4j.tools.PlaylistTool;
 
 public class SubsonicServiceImplTests extends TestCase implements
@@ -125,22 +123,21 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 	@Test
 	public void testGetNowPlaying() throws SubsonicException {
-		NowPlaying nowPlaying = getNowPlaying();
+		List<NowPlaying> nowPlaying = getNowPlaying();
 
 		System.out.println(NEW_TEST_SYSOUT);
 		System.out.println("getNowPlaying");
-		System.out
-				.println("number of entries: " + nowPlaying.getEntry().size());
-		for (NowPlayingEntry entry : nowPlaying.getEntry()) {
+		System.out.println("number of entries: " + nowPlaying.size());
+		for (NowPlaying entry : nowPlaying) {
 			System.out.println("player name:" + entry.getPlayerName());
-			System.out.println("title: " + entry.getTitle());
+			System.out.println("title: " + entry.getPlayedSong().getTitle());
 		}
 
 		assertNotNull(nowPlaying);
 	}
 
 	@Override
-	public NowPlaying getNowPlaying() throws SubsonicException {
+	public List<NowPlaying> getNowPlaying() throws SubsonicException {
 		return subsonicServiceForUser1.getNowPlaying();
 	}
 
@@ -292,9 +289,9 @@ public class SubsonicServiceImplTests extends TestCase implements
 	private List<String> getRandomSongIds() throws SubsonicException {
 		List<String> songIds = new ArrayList<String>();
 
-		RandomSongs randomSongs = getRandomSongs();
-		for (Child child : randomSongs.getSong()) {
-			songIds.add(child.getId());
+		List<Song> randomSongs = getRandomSongs();
+		for (Song song : randomSongs) {
+			songIds.add(song.getId());
 		}
 
 		return songIds;
@@ -333,9 +330,9 @@ public class SubsonicServiceImplTests extends TestCase implements
 		System.out.println("testDownload:");
 
 		// Search a song.
-		RandomSongs randomSongs = getRandomSongs();
+		List<Song> randomSongs = getRandomSongs();
 
-		Child song = randomSongs.getSong().get(0);
+		Song song = randomSongs.get(0);
 
 		System.out.println(MessageFormat.format("Downloading: {0} [{1}]",
 				song.getTitle(), song.getId()));
@@ -392,9 +389,9 @@ public class SubsonicServiceImplTests extends TestCase implements
 		System.out.println("testStream:");
 
 		// Search a song.
-		RandomSongs randomSongs = getRandomSongs();
+		List<Song> randomSongs = getRandomSongs();
 
-		Child song = randomSongs.getSong().get(0);
+		Song song = randomSongs.get(0);
 
 		System.out.println(MessageFormat.format("Streaming: {0} [{1}]",
 				song.getTitle(), song.getId()));
@@ -457,9 +454,9 @@ public class SubsonicServiceImplTests extends TestCase implements
 		System.out.println("testGetCoverArt:");
 
 		// Search a song.
-		RandomSongs randomSongs = getRandomSongs();
+		List<Song> randomSongs = getRandomSongs();
 
-		Child song = randomSongs.getSong().get(0);
+		Song song = randomSongs.get(0);
 
 		System.out.println(MessageFormat.format(
 				"Getting coverart for: {0} [{1}]", song.getTitle(),
@@ -619,18 +616,18 @@ public class SubsonicServiceImplTests extends TestCase implements
 		System.out.println(NEW_TEST_SYSOUT);
 		System.out.println("getRandomSongs");
 
-		RandomSongs randomSongs = getRandomSongs();
+		List<Song> randomSongs = getRandomSongs();
 
-		System.out.println("number of songs: " + randomSongs.getSong().size());
+		System.out.println("number of songs: " + randomSongs.size());
 		;
-		for (Child child : randomSongs.getSong()) {
+		for (Song child : randomSongs) {
 			System.out.println("song: " + child.getId());
 		}
 		assertNotNull(getRandomSongs());
 	}
 
 	@Override
-	public RandomSongs getRandomSongs() throws SubsonicException {
+	public List<Song> getRandomSongs() throws SubsonicException {
 		return subsonicServiceForUser1.getRandomSongs();
 	}
 
@@ -639,19 +636,19 @@ public class SubsonicServiceImplTests extends TestCase implements
 		System.out.println(NEW_TEST_SYSOUT);
 		System.out.println("getRandomSongsWithGenre");
 
-		RandomSongs randomSongs = getRandomSongs();
-		Child child = randomSongs.getSong().get(0);
+		List<Song> randomSongs = getRandomSongs();
+		Song child = randomSongs.get(0);
 
 		String genre = child.getGenre();
 		System.out.println("Getting songs for genre: " + genre);
 
-		RandomSongs randomSongsWithGenre = getRandomSongs(null, genre, null,
+		List<Song> randomSongsWithGenre = getRandomSongs(null, genre, null,
 				null, null);
-		assertEquals(randomSongs.getSong().size() > 0, true);
+		assertEquals(randomSongs.size() > 0, true);
 	}
 
 	@Override
-	public RandomSongs getRandomSongs(Integer size, String genre,
+	public List<Song> getRandomSongs(Integer size, String genre,
 			Integer fromYear, Integer toYear, MusicFolder musicFolder)
 			throws SubsonicException {
 		// TODO Auto-generated method stub
