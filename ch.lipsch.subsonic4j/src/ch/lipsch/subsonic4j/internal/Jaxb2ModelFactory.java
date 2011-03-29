@@ -19,20 +19,24 @@
 package ch.lipsch.subsonic4j.internal;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
+import org.subsonic.restapi.ChatMessages;
 import org.subsonic.restapi.Child;
 import org.subsonic.restapi.Indexes;
 import org.subsonic.restapi.MusicFolders;
 
 import ch.lipsch.subsonic4j.SubsonicService;
 import ch.lipsch.subsonic4j.model.Artist;
+import ch.lipsch.subsonic4j.model.ChatMessage;
 import ch.lipsch.subsonic4j.model.Directory;
 import ch.lipsch.subsonic4j.model.Index;
 import ch.lipsch.subsonic4j.model.License;
 import ch.lipsch.subsonic4j.model.ModelFactory;
 import ch.lipsch.subsonic4j.model.MusicFolder;
 import ch.lipsch.subsonic4j.model.Song;
+import ch.lipsch.subsonic4j.model.impl.ChatMessageImpl;
 import ch.lipsch.subsonic4j.model.impl.DirectoryImpl;
 import ch.lipsch.subsonic4j.model.impl.LicenseImpl;
 import ch.lipsch.subsonic4j.model.impl.SongImpl;
@@ -102,5 +106,20 @@ public final class Jaxb2ModelFactory {
 		StateChecker.check(child, "child");
 		StateChecker.check(service, "service");
 		return new SongImpl(child.getTitle(), child.getId(), service);
+	}
+
+	public static List<ChatMessage> createChatMessages(
+			ChatMessages jaxbChatMessages, SubsonicService service) {
+		List<ChatMessage> chatMessages = new ArrayList<ChatMessage>();
+		for (org.subsonic.restapi.ChatMessage jaxbChatMessage : jaxbChatMessages
+				.getChatMessage()) {
+			Calendar time = Calendar.getInstance();
+			time.setTimeInMillis(jaxbChatMessage.getTime());
+			ChatMessage chatMessage = new ChatMessageImpl(
+					jaxbChatMessage.getMessage(), time,
+					jaxbChatMessage.getUsername(), service);
+			chatMessages.add(chatMessage);
+		}
+		return chatMessages;
 	}
 }
