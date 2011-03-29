@@ -23,10 +23,8 @@ import java.util.List;
 
 import org.subsonic.restapi.AlbumList;
 import org.subsonic.restapi.Lyrics;
-import org.subsonic.restapi.NowPlaying;
 import org.subsonic.restapi.Playlist;
 import org.subsonic.restapi.Playlists;
-import org.subsonic.restapi.RandomSongs;
 import org.subsonic.restapi.SearchResult2;
 import org.subsonic.restapi.User;
 
@@ -35,6 +33,8 @@ import ch.lipsch.subsonic4j.model.ChatMessage;
 import ch.lipsch.subsonic4j.model.Index;
 import ch.lipsch.subsonic4j.model.License;
 import ch.lipsch.subsonic4j.model.MusicFolder;
+import ch.lipsch.subsonic4j.model.NowPlaying;
+import ch.lipsch.subsonic4j.model.Song;
 
 /**
  * Please note that access to the REST API requires that the server has a valid
@@ -125,7 +125,7 @@ public interface SubsonicService {
 	 * @since 1.0.0
 	 * @throws SubsonicException
 	 */
-	public NowPlaying getNowPlaying() throws SubsonicException;
+	public List<NowPlaying> getNowPlaying() throws SubsonicException;
 
 	/**
 	 * Returns an indexed structure of all artists. If one of the parameters are
@@ -459,7 +459,7 @@ public interface SubsonicService {
 	 * @since 1.2.0
 	 * @throws SubsonicException
 	 */
-	public RandomSongs getRandomSongs() throws SubsonicException;
+	public List<Song> getRandomSongs() throws SubsonicException;
 
 	/**
 	 * Returns random songs matching the given criteria.
@@ -483,7 +483,7 @@ public interface SubsonicService {
 	 * @since 1.2.0
 	 * @throws SubsonicException
 	 */
-	public RandomSongs getRandomSongs(Integer size, String genre,
+	public List<Song> getRandomSongs(Integer size, String genre,
 			Integer fromYear, Integer toYear, MusicFolder musicFolder)
 			throws SubsonicException;
 

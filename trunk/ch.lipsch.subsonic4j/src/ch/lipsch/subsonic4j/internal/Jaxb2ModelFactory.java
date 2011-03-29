@@ -26,6 +26,8 @@ import org.subsonic.restapi.ChatMessages;
 import org.subsonic.restapi.Child;
 import org.subsonic.restapi.Indexes;
 import org.subsonic.restapi.MusicFolders;
+import org.subsonic.restapi.NowPlayingEntry;
+import org.subsonic.restapi.RandomSongs;
 
 import ch.lipsch.subsonic4j.SubsonicService;
 import ch.lipsch.subsonic4j.model.Artist;
@@ -35,10 +37,12 @@ import ch.lipsch.subsonic4j.model.Index;
 import ch.lipsch.subsonic4j.model.License;
 import ch.lipsch.subsonic4j.model.ModelFactory;
 import ch.lipsch.subsonic4j.model.MusicFolder;
+import ch.lipsch.subsonic4j.model.NowPlaying;
 import ch.lipsch.subsonic4j.model.Song;
 import ch.lipsch.subsonic4j.model.impl.ChatMessageImpl;
 import ch.lipsch.subsonic4j.model.impl.DirectoryImpl;
 import ch.lipsch.subsonic4j.model.impl.LicenseImpl;
+import ch.lipsch.subsonic4j.model.impl.NowPlayingImpl;
 import ch.lipsch.subsonic4j.model.impl.SongImpl;
 import ch.lipsch.subsonic4j.tools.StateChecker;
 
@@ -105,7 +109,8 @@ public final class Jaxb2ModelFactory {
 	public static Song createSong(Child child, SubsonicService service) {
 		StateChecker.check(child, "child");
 		StateChecker.check(service, "service");
-		return new SongImpl(child.getTitle(), child.getId(), service);
+		return new SongImpl(child.getTitle(), child.getId(), child.getGenre(),
+				service);
 	}
 
 	public static List<ChatMessage> createChatMessages(
@@ -121,5 +126,39 @@ public final class Jaxb2ModelFactory {
 			chatMessages.add(chatMessage);
 		}
 		return chatMessages;
+	}
+
+	public static List<NowPlaying> createNowPlaying(
+			org.subsonic.restapi.NowPlaying jaxbNowPlaying,
+			SubsonicService service) {
+		StateChecker.check(jaxbNowPlaying, "jaxbNowPlaying");
+		StateChecker.check(service, "service");
+
+		List<NowPlaying> nowPlayings = new ArrayList<NowPlaying>();
+
+		for (NowPlayingEntry jaxbNowPlayingEntry : jaxbNowPlaying.getEntry()) {
+			Song currentlyPlayedSong = createSong(jaxbNowPlayingEntry, service);
+			NowPlaying nowPlaying = new NowPlayingImpl(
+					jaxbNowPlayingEntry.getUsername(),
+					jaxbNowPlayingEntry.getPlayerName(),
+					jaxbNowPlayingEntry.getMinutesAgo(), currentlyPlayedSong,
+					service);
+		}
+
+		return nowPlayings;
+	}
+
+	public static List<Song> createSongs(RandomSongs jaxbRandomSongs,
+			SubsonicService service) {
+		StateChecker.check(jaxbRandomSongs, "jaxbRandomSongs");
+		StateChecker.check(service, "service");
+
+		List<Song> songs = new ArrayList<Song>();
+
+		for (Child child : jaxbRandomSongs.getSong()) {
+			songs.add(createSong(child, service));
+		}
+
+		return songs;
 	}
 }

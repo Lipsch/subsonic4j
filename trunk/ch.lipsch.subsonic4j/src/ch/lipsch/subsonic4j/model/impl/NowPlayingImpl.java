@@ -19,44 +19,49 @@
 package ch.lipsch.subsonic4j.model.impl;
 
 import ch.lipsch.subsonic4j.SubsonicService;
+import ch.lipsch.subsonic4j.model.NowPlaying;
 import ch.lipsch.subsonic4j.model.Song;
 import ch.lipsch.subsonic4j.tools.StateChecker;
 
-public class SongImpl extends AbstractSubsonicModelObject implements Song {
+public class NowPlayingImpl extends AbstractSubsonicModelObject implements
+		NowPlaying {
 
-	private final String id;
-	private final String title;
-	private final String genre;
+	private final String username;
+	private final String playerName;
+	private final int minutesAgo;
+	private final Song song;
 
-	public SongImpl(String title, String id, String genre,
-			SubsonicService service) {
+	public NowPlayingImpl(String username, String playerName, int minutesAgo,
+			Song song, SubsonicService service) {
 		super(service);
-		StateChecker.check(title, "title");
-		StateChecker.check(id, "id");
-		StateChecker.check(genre, "genre");
-		this.title = title;
-		this.id = id;
-		this.genre = genre;
+		StateChecker.check(username, "username");
+		StateChecker.check(playerName, "playerName");
+		StateChecker.checkGreaterOrEqual(minutesAgo, 0, "minutesAgo");
+		StateChecker.check(song, "song");
+		this.username = username;
+		this.playerName = playerName;
+		this.minutesAgo = minutesAgo;
+		this.song = song;
 	}
 
 	@Override
-	public String getTitle() {
-		return title;
+	public String getUsername() {
+		return username;
 	}
 
 	@Override
-	public String getId() {
-		return id;
+	public int getMinutesAgo() {
+		return minutesAgo;
 	}
 
 	@Override
-	public String toString() {
-		return getTitle();
+	public String getPlayerName() {
+		return playerName;
 	}
 
 	@Override
-	public String getGenre() {
-		return genre;
+	public Song getPlayedSong() {
+		return song;
 	}
 
 }

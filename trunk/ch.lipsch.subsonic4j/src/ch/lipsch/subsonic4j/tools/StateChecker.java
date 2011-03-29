@@ -37,4 +37,13 @@ public final class StateChecker {
 					"{0} must not be null.", object)); //$NON-NLS-1$
 		}
 	}
+
+	public static void checkGreaterOrEqual(int valueToCheck,
+			int greaterOrEqual, String identifier) {
+		if (valueToCheck < greaterOrEqual) {
+			throw new IllegalStateException(MessageFormat.format(
+					"{0} [{1}] must be greater or equal than {2}", identifier,
+					valueToCheck, greaterOrEqual));
+		}
+	}
 }
