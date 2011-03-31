@@ -16,23 +16,15 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; If not, see <http://www.gnu.org/licenses/>.
  */
-package ch.lipsch.subsonic4j.tools;
+package ch.lipsch.subsonic4j.model;
 
-import ch.lipsch.subsonic4j.SubsonicException;
-import ch.lipsch.subsonic4j.SubsonicService;
-import ch.lipsch.subsonic4j.model.Playlist;
+public interface User extends SubsonicModelObject {
 
-public final class PlaylistTool {
+	public enum Role {
+		ADMIN, DOWNLOAD, SETTINGS, UPLOAD, PLAYLIST, COVER_ART, COMMENTS, PODCASTS, STREAMING, JUKEBOX,
+	};
 
-	public static String findPlaylistIdByName(String playlistName,
-			SubsonicService service) throws SubsonicException {
-		String playListId = null;
-		for (Playlist playList : service.getPlayLists()) {
-			if (playList.getName().equals(playlistName)) {
-				playListId = playList.getId();
-				break;
-			}
-		}
-		return playListId;
-	}
+	public String getUsername();
+
+	public boolean hasRole(Role role);
 }
