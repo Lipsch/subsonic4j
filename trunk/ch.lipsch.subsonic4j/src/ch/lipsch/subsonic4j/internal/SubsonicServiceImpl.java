@@ -46,13 +46,8 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.subsonic.restapi.AlbumList;
-import org.subsonic.restapi.Lyrics;
-import org.subsonic.restapi.Playlist;
-import org.subsonic.restapi.Playlists;
 import org.subsonic.restapi.Response;
 import org.subsonic.restapi.SearchResult2;
-import org.subsonic.restapi.User;
 
 import ch.lipsch.subsonic4j.CredentialsProvider;
 import ch.lipsch.subsonic4j.StreamListener;
@@ -65,7 +60,9 @@ import ch.lipsch.subsonic4j.model.Index;
 import ch.lipsch.subsonic4j.model.License;
 import ch.lipsch.subsonic4j.model.MusicFolder;
 import ch.lipsch.subsonic4j.model.NowPlaying;
+import ch.lipsch.subsonic4j.model.Playlist;
 import ch.lipsch.subsonic4j.model.Song;
+import ch.lipsch.subsonic4j.model.User;
 import ch.lipsch.subsonic4j.tools.StateChecker;
 
 /**
@@ -397,7 +394,7 @@ public class SubsonicServiceImpl implements SubsonicService {
 	}
 
 	@Override
-	public Playlists getPlayLists() throws SubsonicException {
+	public List<Playlist> getPlayLists() throws SubsonicException {
 		throwIfDisposed();
 		String restifiedUrl = SubsonicUtil.restifySubsonicUrl(getUrl(),
 				PATH_GET_PLAYLISTS);
@@ -406,11 +403,11 @@ public class SubsonicServiceImpl implements SubsonicService {
 
 		Response response;
 		response = fetchResponse(restifiedUrl);
-		return response.getPlaylists();
+		return Jaxb2ModelFactory.createPlaylists(response.getPlaylists(), this);
 	}
 
 	@Override
-	public Playlist getPlayList(String id) throws SubsonicException {
+	public List<Song> getPlayList(String id) throws SubsonicException {
 		throwIfDisposed();
 		String restifiedUrl = SubsonicUtil.restifySubsonicUrl(getUrl(),
 				PATH_GET_PLAYLIST);
@@ -420,7 +417,8 @@ public class SubsonicServiceImpl implements SubsonicService {
 
 		Response response;
 		response = fetchResponse(restifiedUrl);
-		return response.getPlaylist();
+		return Jaxb2ModelFactory.createSongs(response.getPlaylist().getEntry(),
+				this);
 	}
 
 	@Override
@@ -557,7 +555,7 @@ public class SubsonicServiceImpl implements SubsonicService {
 
 		Response response;
 		response = fetchResponse(restifiedUrl);
-		return response.getUser();
+		return Jaxb2ModelFactory.createUser(response.getUser(), this);
 	}
 
 	@Override
@@ -650,7 +648,7 @@ public class SubsonicServiceImpl implements SubsonicService {
 	}
 
 	@Override
-	public AlbumList getAlbumList(AlbumType albumType, Integer size,
+	public List<Song> getAlbumList(AlbumType albumType, Integer size,
 			Integer offset) throws SubsonicException {
 		throwIfDisposed();
 		String restifiedUrl = SubsonicUtil.restifySubsonicUrl(getUrl(),
@@ -666,7 +664,8 @@ public class SubsonicServiceImpl implements SubsonicService {
 
 		Response response;
 		response = fetchResponse(restifiedUrl);
-		return response.getAlbumList();
+		return Jaxb2ModelFactory.createSongs(
+				response.getAlbumList().getAlbum(), this);
 	}
 
 	@Override
@@ -697,7 +696,8 @@ public class SubsonicServiceImpl implements SubsonicService {
 
 		Response response;
 		response = fetchResponse(restifiedUrl);
-		return Jaxb2ModelFactory.createSongs(response.getRandomSongs(), this);
+		return Jaxb2ModelFactory.createSongs(response.getRandomSongs()
+				.getSong(), this);
 	}
 
 	private synchronized CredentialsProvider getCredentialsProvider() {
@@ -705,7 +705,7 @@ public class SubsonicServiceImpl implements SubsonicService {
 	}
 
 	@Override
-	public Lyrics getLyrics(String artist, String title)
+	public String getLyrics(String artist, String title)
 			throws SubsonicException {
 		throwIfDisposed();
 		String restifiedUrl = SubsonicUtil.restifySubsonicUrl(getUrl(),
@@ -719,7 +719,7 @@ public class SubsonicServiceImpl implements SubsonicService {
 
 		Response response;
 		response = fetchResponse(restifiedUrl);
-		return response.getLyrics();
+		return response.getLyrics().getContent();
 	}
 
 	/**

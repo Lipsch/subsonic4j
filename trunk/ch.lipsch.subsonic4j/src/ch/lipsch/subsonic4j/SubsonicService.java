@@ -21,12 +21,7 @@ package ch.lipsch.subsonic4j;
 import java.util.Calendar;
 import java.util.List;
 
-import org.subsonic.restapi.AlbumList;
-import org.subsonic.restapi.Lyrics;
-import org.subsonic.restapi.Playlist;
-import org.subsonic.restapi.Playlists;
 import org.subsonic.restapi.SearchResult2;
-import org.subsonic.restapi.User;
 
 import ch.lipsch.subsonic4j.model.Artist;
 import ch.lipsch.subsonic4j.model.ChatMessage;
@@ -34,7 +29,9 @@ import ch.lipsch.subsonic4j.model.Index;
 import ch.lipsch.subsonic4j.model.License;
 import ch.lipsch.subsonic4j.model.MusicFolder;
 import ch.lipsch.subsonic4j.model.NowPlaying;
+import ch.lipsch.subsonic4j.model.Playlist;
 import ch.lipsch.subsonic4j.model.Song;
+import ch.lipsch.subsonic4j.model.User;
 
 /**
  * Please note that access to the REST API requires that the server has a valid
@@ -233,7 +230,7 @@ public interface SubsonicService {
 	 * @since 1.0.0
 	 * @throws SubsonicException
 	 */
-	public Playlists getPlayLists() throws SubsonicException;
+	public List<Playlist> getPlayLists() throws SubsonicException;
 
 	/**
 	 * Returns a listing of files in a saved playlist.
@@ -244,7 +241,7 @@ public interface SubsonicService {
 	 * @since 1.0.0
 	 * @throws SubsonicException
 	 */
-	public Playlist getPlayList(String id) throws SubsonicException;
+	public List<Song> getPlayList(String id) throws SubsonicException;
 
 	/**
 	 * Creates or updates a saved playlist. Note: The user must be authorized to
@@ -449,7 +446,7 @@ public interface SubsonicService {
 	 * @since 1.2.0
 	 * @throws SubsonicException
 	 */
-	public AlbumList getAlbumList(AlbumType albumType, Integer size,
+	public List<Song> getAlbumList(AlbumType albumType, Integer size,
 			Integer offset) throws SubsonicException;
 
 	/**
@@ -498,7 +495,7 @@ public interface SubsonicService {
 	 * @return
 	 * @throws SubsonicException
 	 */
-	public Lyrics getLyrics(String artist, String title)
+	public String getLyrics(String artist, String title)
 			throws SubsonicException;
 
 	// TODO Jukebox conrol

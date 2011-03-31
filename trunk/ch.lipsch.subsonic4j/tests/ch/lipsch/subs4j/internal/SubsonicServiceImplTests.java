@@ -35,13 +35,7 @@ import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.subsonic.restapi.AlbumList;
-import org.subsonic.restapi.Lyrics;
-import org.subsonic.restapi.Playlist;
-import org.subsonic.restapi.PlaylistIdAndName;
-import org.subsonic.restapi.Playlists;
 import org.subsonic.restapi.SearchResult2;
-import org.subsonic.restapi.User;
 
 import ch.lipsch.subs4j.TestConfig;
 import ch.lipsch.subsonic4j.StreamListener;
@@ -55,7 +49,9 @@ import ch.lipsch.subsonic4j.model.Index;
 import ch.lipsch.subsonic4j.model.License;
 import ch.lipsch.subsonic4j.model.MusicFolder;
 import ch.lipsch.subsonic4j.model.NowPlaying;
+import ch.lipsch.subsonic4j.model.Playlist;
 import ch.lipsch.subsonic4j.model.Song;
+import ch.lipsch.subsonic4j.model.User;
 import ch.lipsch.subsonic4j.tools.PlaylistTool;
 
 public class SubsonicServiceImplTests extends TestCase implements
@@ -243,17 +239,17 @@ public class SubsonicServiceImplTests extends TestCase implements
 	}
 
 	@Override
-	public Playlists getPlayLists() throws SubsonicException {
+	public List<Playlist> getPlayLists() throws SubsonicException {
 		return subsonicServiceForUser1.getPlayLists();
 	}
 
 	@Test
 	public void testGetPlaylist() throws SubsonicException {
-		assertNotNull(getPlayLists().getPlaylist().get(0).getId());
+		assertNotNull(getPlayLists().get(0).getId());
 	}
 
 	@Override
-	public Playlist getPlayList(String id) throws SubsonicException {
+	public List<Song> getPlayList(String id) throws SubsonicException {
 		return subsonicServiceForUser1.getPlayList(id);
 	}
 
@@ -271,13 +267,13 @@ public class SubsonicServiceImplTests extends TestCase implements
 		Random rnd = new Random(System.currentTimeMillis());
 		boolean foundInexistent = false;
 		String newPlaylistName = null;
-		Playlists existingPlaylists = getPlayLists();
+		List<Playlist> existingPlaylists = getPlayLists();
 
 		while (!foundInexistent) {
 			newPlaylistName = Long.toString(rnd.nextLong());
 
 			foundInexistent = true;
-			for (PlaylistIdAndName playList : existingPlaylists.getPlaylist()) {
+			for (Playlist playList : existingPlaylists) {
 				if (playList.getName().equals(newPlaylistName)) {
 					foundInexistent = false;
 				}
@@ -606,7 +602,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 	}
 
 	@Override
-	public AlbumList getAlbumList(AlbumType albumType, Integer size,
+	public List<Song> getAlbumList(AlbumType albumType, Integer size,
 			Integer offset) throws SubsonicException {
 		return subsonicServiceForUser1.getAlbumList(albumType, size, offset);
 	}
@@ -657,11 +653,21 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 	@Test
 	public void testGetLyrics() throws SubsonicException {
-		assertNotNull(getLyrics("test", "test"));
+		System.out.println(NEW_TEST_SYSOUT);
+		System.out.println("getLyrics");
+
+		String artist = "Green Day";
+		String title = "Disappearing Boy";
+
+		String lyrics = getLyrics(artist, title);
+		System.out.println(MessageFormat.format("Lyrics for {0} / {1} \n {2}",
+				artist, title, lyrics));
+
+		assertNotNull(lyrics);
 	}
 
 	@Override
-	public Lyrics getLyrics(String artist, String title)
+	public String getLyrics(String artist, String title)
 			throws SubsonicException {
 		return subsonicServiceForUser1.getLyrics(artist, title);
 	}
