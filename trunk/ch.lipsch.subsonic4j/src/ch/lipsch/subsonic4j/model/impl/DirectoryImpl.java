@@ -33,7 +33,7 @@ import ch.lipsch.subsonic4j.tools.StateChecker;
 public class DirectoryImpl extends AbstractSubsonicModelObject implements
 		Directory {
 
-	private final org.subsonic.restapi.Directory directory;
+	private final RootHolder root;
 
 	/**
 	 * Directly contained songs in this directory. Built up lazily. Access must
@@ -47,32 +47,29 @@ public class DirectoryImpl extends AbstractSubsonicModelObject implements
 	 */
 	private List<Directory> subDirectories = null;
 
+	public DirectoryImpl(Child root, SubsonicService service) {
+		super(service);
+		this.root = new RootHolder(root);
+	}
+
 	public DirectoryImpl(org.subsonic.restapi.Directory directory,
 			SubsonicService service) {
 		super(service);
 		StateChecker.check(directory, "directory");
-		this.directory = directory;
-
+		root = new RootHolder(directory);
 	}
 
 	private synchronized void buildUpChildsOnce() {
 		if (subDirectories == null || songs == null) {
 			subDirectories = new ArrayList<Directory>();
 			songs = new ArrayList<Song>();
-			for (Child child : directory.getChild()) {
-				if (child.isIsDir()) {
-					subDirectories.add(getService().getMusicDirectory(
-							child.getId()));
-				} else {
-					songs.add(Jaxb2ModelFactory.createSong(child, getService()));
-				}
-			}
+			root.buildUpChilds();
 		}
 	}
 
 	@Override
 	public String getName() {
-		return directory.getName();
+		return root.getName();
 	}
 
 	@Override
@@ -89,12 +86,65 @@ public class DirectoryImpl extends AbstractSubsonicModelObject implements
 
 	@Override
 	public String getId() {
-		return directory.getId();
+		return root.getId();
 	}
 
 	@Override
 	public String toString() {
 		return getName();
+	}
+
+	private class RootHolder {
+		private final org.subsonic.restapi.Directory directory;
+		private final Child rootChild;
+
+		private RootHolder(org.subsonic.restapi.Directory directory) {
+			StateChecker.check(directory, "directory");
+			this.directory = directory;
+			this.rootChild = null;
+		}
+
+		public String getName() {
+			if (directory != null) {
+				return directory.getName();
+			} else {
+				return rootChild.getTitle();
+			}
+		}
+
+		private RootHolder(Child root) {
+			StateChecker.check(root, "root");
+			StateChecker.check(root.isIsDir(), "root must be a directory");
+			this.rootChild = root;
+			this.directory = null;
+		}
+
+		public void buildUpChilds() {
+			if (directory != null) {
+				for (Child child : directory.getChild()) {
+					if (child.isIsDir()) {
+						subDirectories.add(getService().getMusicDirectory(
+								child.getId()));
+					} else {
+						songs.add(Jaxb2ModelFactory.createSong(child,
+								getService()));
+					}
+				}
+			} else {
+				Directory musicDir = getService().getMusicDirectory(
+						rootChild.getId());
+				subDirectories.addAll(musicDir.getChildDirectories());
+				songs.addAll(musicDir.getSongs());
+			}
+		}
+
+		private String getId() {
+			if (directory != null) {
+				return directory.getId();
+			} else {
+				return rootChild.getId();
+			}
+		}
 	}
 
 }

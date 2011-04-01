@@ -56,6 +56,7 @@ import ch.lipsch.subsonic4j.SubsonicException.ErrorType;
 import ch.lipsch.subsonic4j.SubsonicService;
 import ch.lipsch.subsonic4j.model.Artist;
 import ch.lipsch.subsonic4j.model.ChatMessage;
+import ch.lipsch.subsonic4j.model.Directory;
 import ch.lipsch.subsonic4j.model.Index;
 import ch.lipsch.subsonic4j.model.License;
 import ch.lipsch.subsonic4j.model.MusicFolder;
@@ -648,7 +649,7 @@ public class SubsonicServiceImpl implements SubsonicService {
 	}
 
 	@Override
-	public List<Song> getAlbumList(AlbumType albumType, Integer size,
+	public List<Directory> getAlbumList(AlbumType albumType, Integer size,
 			Integer offset) throws SubsonicException {
 		throwIfDisposed();
 		String restifiedUrl = SubsonicUtil.restifySubsonicUrl(getUrl(),
@@ -664,8 +665,9 @@ public class SubsonicServiceImpl implements SubsonicService {
 
 		Response response;
 		response = fetchResponse(restifiedUrl);
-		return Jaxb2ModelFactory.createSongs(
-				response.getAlbumList().getAlbum(), this);
+
+		return Jaxb2ModelFactory.createDirectories(response.getAlbumList(),
+				this);
 	}
 
 	@Override
@@ -780,6 +782,8 @@ public class SubsonicServiceImpl implements SubsonicService {
 		restifiedUrl = SubsonicUtil.appendCredentialsAsFirstParam(restifiedUrl,
 				getCredentialsProvider());
 		restifiedUrl = SubsonicUtil.appendIfSet(restifiedUrl, "id", id);
+		restifiedUrl = SubsonicUtil.appendIfSet(restifiedUrl, "maxBitRate",
+				Integer.toString(BitRate.BITRATE_DEFAULT.intValue()));
 
 		return restifiedUrl;
 	}

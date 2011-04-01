@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.subsonic.restapi.AlbumList;
 import org.subsonic.restapi.ChatMessages;
 import org.subsonic.restapi.Child;
 import org.subsonic.restapi.Indexes;
@@ -112,6 +113,19 @@ public final class Jaxb2ModelFactory {
 			org.subsonic.restapi.Directory jaxbDirectory,
 			SubsonicService service) {
 		return new DirectoryImpl(jaxbDirectory, service);
+	}
+
+	public static List<Directory> createDirectories(AlbumList jaxbAlbums,
+			SubsonicService service) {
+		StateChecker.check(jaxbAlbums, "jaxbAlbums");
+		StateChecker.check(service, "service");
+
+		List<Directory> directories = new ArrayList<Directory>();
+		for (Child jaxbAlbum : jaxbAlbums.getAlbum()) {
+			directories.add(new DirectoryImpl(jaxbAlbum, service));
+		}
+
+		return directories;
 	}
 
 	public static Song createSong(Child child, SubsonicService service) {

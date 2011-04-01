@@ -34,7 +34,7 @@ public final class StateChecker {
 	public static void check(Object object, String identifier) {
 		if (object == null) {
 			throw new IllegalStateException(MessageFormat.format(
-					"{0} must not be null.", object)); //$NON-NLS-1$
+					"{0} must not be null.", identifier)); //$NON-NLS-1$
 		}
 	}
 
@@ -44,6 +44,12 @@ public final class StateChecker {
 			throw new IllegalStateException(MessageFormat.format(
 					"{0} [{1}] must be greater or equal than {2}", identifier,
 					valueToCheck, greaterOrEqual));
+		}
+	}
+
+	public static void check(boolean expression, String message) {
+		if (!expression) {
+			throw new IllegalStateException(message);
 		}
 	}
 }

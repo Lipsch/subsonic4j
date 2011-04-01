@@ -24,5 +24,10 @@ public interface Song extends SubsonicModelObject {
 
 	public String getId();
 
+	/**
+	 * Delivers the genre of a song.
+	 * 
+	 * @return The genre. May be <code>null</code>.
+	 */
 	public String getGenre();
 }
