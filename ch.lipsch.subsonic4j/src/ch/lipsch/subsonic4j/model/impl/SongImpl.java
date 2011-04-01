@@ -33,7 +33,6 @@ public class SongImpl extends AbstractSubsonicModelObject implements Song {
 		super(service);
 		StateChecker.check(title, "title");
 		StateChecker.check(id, "id");
-		StateChecker.check(genre, "genre");
 		this.title = title;
 		this.id = id;
 		this.genre = genre;

@@ -598,11 +598,11 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 	@Test
 	public void testGetAlbumList() throws SubsonicException {
-		assertNotNull(getAlbumList(AlbumType.NEWEST, null, null));
+		assertTrue(getAlbumList(AlbumType.NEWEST, null, null).size() > 0);
 	}
 
 	@Override
-	public List<Song> getAlbumList(AlbumType albumType, Integer size,
+	public List<Directory> getAlbumList(AlbumType albumType, Integer size,
 			Integer offset) throws SubsonicException {
 		return subsonicServiceForUser1.getAlbumList(albumType, size, offset);
 	}

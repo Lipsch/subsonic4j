@@ -25,6 +25,7 @@ import org.subsonic.restapi.SearchResult2;
 
 import ch.lipsch.subsonic4j.model.Artist;
 import ch.lipsch.subsonic4j.model.ChatMessage;
+import ch.lipsch.subsonic4j.model.Directory;
 import ch.lipsch.subsonic4j.model.Index;
 import ch.lipsch.subsonic4j.model.License;
 import ch.lipsch.subsonic4j.model.MusicFolder;
@@ -446,7 +447,7 @@ public interface SubsonicService {
 	 * @since 1.2.0
 	 * @throws SubsonicException
 	 */
-	public List<Song> getAlbumList(AlbumType albumType, Integer size,
+	public List<Directory> getAlbumList(AlbumType albumType, Integer size,
 			Integer offset) throws SubsonicException;
 
 	/**
