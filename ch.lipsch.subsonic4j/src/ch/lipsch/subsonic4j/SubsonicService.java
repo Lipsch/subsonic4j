@@ -21,8 +21,6 @@ package ch.lipsch.subsonic4j;
 import java.util.Calendar;
 import java.util.List;
 
-import org.subsonic.restapi.SearchResult2;
-
 import ch.lipsch.subsonic4j.model.Artist;
 import ch.lipsch.subsonic4j.model.ChatMessage;
 import ch.lipsch.subsonic4j.model.Directory;
@@ -31,6 +29,7 @@ import ch.lipsch.subsonic4j.model.License;
 import ch.lipsch.subsonic4j.model.MusicFolder;
 import ch.lipsch.subsonic4j.model.NowPlaying;
 import ch.lipsch.subsonic4j.model.Playlist;
+import ch.lipsch.subsonic4j.model.SearchResult;
 import ch.lipsch.subsonic4j.model.Song;
 import ch.lipsch.subsonic4j.model.User;
 
@@ -196,7 +195,7 @@ public interface SubsonicService {
 	 * @since 1.4.0
 	 * @throws SubsonicException
 	 */
-	public SearchResult2 search(String query) throws SubsonicException;
+	public SearchResult search(String query) throws SubsonicException;
 
 	/**
 	 * Returns albums, artists and songs matching the given search criteria.
@@ -220,7 +219,7 @@ public interface SubsonicService {
 	 * @since 1.4.0
 	 * @throws SubsonicException
 	 */
-	public SearchResult2 search(String query, Integer artistCount,
+	public SearchResult search(String query, Integer artistCount,
 			Integer artistOffset, Integer albumCound, Integer albumOffset,
 			Integer songCount, Integer songOffset) throws SubsonicException;
 

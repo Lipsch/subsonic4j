@@ -32,6 +32,7 @@ import org.subsonic.restapi.MusicFolders;
 import org.subsonic.restapi.NowPlayingEntry;
 import org.subsonic.restapi.PlaylistIdAndName;
 import org.subsonic.restapi.Playlists;
+import org.subsonic.restapi.SearchResult2;
 
 import ch.lipsch.subsonic4j.SubsonicService;
 import ch.lipsch.subsonic4j.model.Artist;
@@ -43,6 +44,7 @@ import ch.lipsch.subsonic4j.model.ModelFactory;
 import ch.lipsch.subsonic4j.model.MusicFolder;
 import ch.lipsch.subsonic4j.model.NowPlaying;
 import ch.lipsch.subsonic4j.model.Playlist;
+import ch.lipsch.subsonic4j.model.SearchResult;
 import ch.lipsch.subsonic4j.model.Song;
 import ch.lipsch.subsonic4j.model.User;
 import ch.lipsch.subsonic4j.model.User.Role;
@@ -51,6 +53,7 @@ import ch.lipsch.subsonic4j.model.impl.DirectoryImpl;
 import ch.lipsch.subsonic4j.model.impl.LicenseImpl;
 import ch.lipsch.subsonic4j.model.impl.NowPlayingImpl;
 import ch.lipsch.subsonic4j.model.impl.PlayListImpl;
+import ch.lipsch.subsonic4j.model.impl.SearchResultImpl;
 import ch.lipsch.subsonic4j.model.impl.SongImpl;
 import ch.lipsch.subsonic4j.model.impl.UserImpl;
 import ch.lipsch.subsonic4j.tools.StateChecker;
@@ -90,14 +93,19 @@ public final class Jaxb2ModelFactory {
 
 	private static List<Artist> createArtistList(
 			org.subsonic.restapi.Index jaxbIndex, SubsonicService service) {
-		List<Artist> artists = new ArrayList<Artist>();
 
 		List<org.subsonic.restapi.Artist> jaxbArtists = jaxbIndex.getArtist();
+		return createArtistList(jaxbArtists, service);
+	}
+
+	private static List<Artist> createArtistList(
+			List<org.subsonic.restapi.Artist> jaxbArtists,
+			SubsonicService service) {
+		List<Artist> artists = new ArrayList<Artist>();
 		for (org.subsonic.restapi.Artist jaxbArtist : jaxbArtists) {
 			artists.add(ModelFactory.createArtist(jaxbArtist.getName(),
 					jaxbArtist.getId(), service));
 		}
-
 		return artists;
 	}
 
@@ -165,6 +173,7 @@ public final class Jaxb2ModelFactory {
 					jaxbNowPlayingEntry.getPlayerName(),
 					jaxbNowPlayingEntry.getMinutesAgo(), currentlyPlayedSong,
 					service);
+			nowPlayings.add(nowPlaying);
 		}
 
 		return nowPlayings;
@@ -232,5 +241,41 @@ public final class Jaxb2ModelFactory {
 			playlist.add(new PlayListImpl(jaxbPlaylist, service));
 		}
 		return playlist;
+	}
+
+	public static SearchResult createSearchResult(SearchResult2 jaxbSearch,
+			SubsonicService service) {
+		StateChecker.check(jaxbSearch, "jaxbSearch");
+		StateChecker.check(service, "service");
+
+		List<Song> songs = createSongs(jaxbSearch.getSong(), service);
+		List<Artist> artists = createArtistList(jaxbSearch.getArtist(), service);
+		List<Directory> albums = createDirectories(jaxbSearch.getAlbum(),
+				service);
+
+		return new SearchResultImpl(songs, albums, artists, service);
+	}
+
+	/**
+	 * Converts a list of {@link Child} to a list of {@link Directory}.
+	 * 
+	 * @param jaxbDir
+	 *            A list of {@link Child}. Entries which are not a direcotry are
+	 *            ignored. Must not be <code>null</code>.
+	 * @param service
+	 *            The subsonic service. Must not be <code>null</code>.
+	 * @return The converted list. Returns never <code>null</code>.
+	 */
+	private static List<Directory> createDirectories(List<Child> jaxbDirs,
+			SubsonicService service) {
+		List<Directory> directories = new ArrayList<Directory>();
+
+		for (Child jaxbDir : jaxbDirs) {
+			if (jaxbDir.isIsDir()) {
+				directories.add(new DirectoryImpl(jaxbDir, service));
+			}
+		}
+
+		return directories;
 	}
 }
