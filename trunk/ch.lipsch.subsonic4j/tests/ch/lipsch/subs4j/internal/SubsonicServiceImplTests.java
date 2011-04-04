@@ -35,7 +35,6 @@ import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.subsonic.restapi.SearchResult2;
 
 import ch.lipsch.subs4j.TestConfig;
 import ch.lipsch.subsonic4j.StreamListener;
@@ -50,6 +49,7 @@ import ch.lipsch.subsonic4j.model.License;
 import ch.lipsch.subsonic4j.model.MusicFolder;
 import ch.lipsch.subsonic4j.model.NowPlaying;
 import ch.lipsch.subsonic4j.model.Playlist;
+import ch.lipsch.subsonic4j.model.SearchResult;
 import ch.lipsch.subsonic4j.model.Song;
 import ch.lipsch.subsonic4j.model.User;
 import ch.lipsch.subsonic4j.tools.PlaylistTool;
@@ -159,17 +159,12 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 	@Test
 	public void testGetIndexesWithDate() throws SubsonicException {
-		List<Index> indexes = getIndexes(null, Calendar.getInstance());
-		// TODO
-		// assertNotNull(indexes);
+		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Test
 	public void testGetIndexesWithFolderAndDate() throws SubsonicException {
-		List<Index> indexes = getIndexes(getMusicFolders().get(0),
-				Calendar.getInstance());
-		// TODO
-		// assertNotNull(indexes);
+		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Override
@@ -221,12 +216,12 @@ public class SubsonicServiceImplTests extends TestCase implements
 	}
 
 	@Override
-	public SearchResult2 search(String query) throws SubsonicException {
+	public SearchResult search(String query) throws SubsonicException {
 		return subsonicServiceForUser1.search(query);
 	}
 
 	@Override
-	public SearchResult2 search(String query, Integer artistCount,
+	public SearchResult search(String query, Integer artistCount,
 			Integer artistOffset, Integer albumCound, Integer albumOffset,
 			Integer songCount, Integer songOffset) throws SubsonicException {
 		return subsonicServiceForUser1.search(query, artistCount, artistOffset,
@@ -640,7 +635,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 		List<Song> randomSongsWithGenre = getRandomSongs(null, genre, null,
 				null, null);
-		assertEquals(randomSongs.size() > 0, true);
+		assertEquals(randomSongsWithGenre.size() > 0, true);
 	}
 
 	@Override

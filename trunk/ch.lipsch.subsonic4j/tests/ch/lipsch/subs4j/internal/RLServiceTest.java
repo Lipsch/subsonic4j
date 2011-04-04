@@ -19,26 +19,22 @@
 package ch.lipsch.subs4j.internal;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 
 import junit.framework.TestCase;
 
 import org.junit.Before;
 
-import ch.lipsch.subs4j.TestConfig;
 import ch.lipsch.subsonic4j.SubsonicException;
-import ch.lipsch.subsonic4j.SubsonicFactory;
-import ch.lipsch.subsonic4j.SubsonicService;
 
 public class RLServiceTest extends TestCase {
 
-	private SubsonicService subsonicService;
+	// private SubsonicService subsonicService;
 
 	@Override
 	@Before
 	public void setUp() throws MalformedURLException {
-		subsonicService = SubsonicFactory.createService(new URL(
-				TestConfig.SUBSONIC_URL), TestConfig.USER1_CREDENTIALS);
+		// subsonicService = SubsonicFactory.createService(new URL(
+		// TestConfig.SUBSONIC_URL), TestConfig.USER1_CREDENTIALS);
 	}
 
 	public void testTraverse() throws SubsonicException {

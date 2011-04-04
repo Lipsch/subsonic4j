@@ -47,7 +47,6 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.subsonic.restapi.Response;
-import org.subsonic.restapi.SearchResult2;
 
 import ch.lipsch.subsonic4j.CredentialsProvider;
 import ch.lipsch.subsonic4j.StreamListener;
@@ -62,6 +61,7 @@ import ch.lipsch.subsonic4j.model.License;
 import ch.lipsch.subsonic4j.model.MusicFolder;
 import ch.lipsch.subsonic4j.model.NowPlaying;
 import ch.lipsch.subsonic4j.model.Playlist;
+import ch.lipsch.subsonic4j.model.SearchResult;
 import ch.lipsch.subsonic4j.model.Song;
 import ch.lipsch.subsonic4j.model.User;
 import ch.lipsch.subsonic4j.tools.StateChecker;
@@ -362,12 +362,12 @@ public class SubsonicServiceImpl implements SubsonicService {
 	}
 
 	@Override
-	public SearchResult2 search(String query) throws SubsonicException {
+	public SearchResult search(String query) throws SubsonicException {
 		return search(query, 20, 0, 20, 0, 20, 0);
 	}
 
 	@Override
-	public SearchResult2 search(String query, Integer artistCount,
+	public SearchResult search(String query, Integer artistCount,
 			Integer artistOffset, Integer albumCount, Integer albumOffset,
 			Integer songCount, Integer songOffset) throws SubsonicException {
 		throwIfDisposed();
@@ -391,7 +391,8 @@ public class SubsonicServiceImpl implements SubsonicService {
 
 		Response response;
 		response = fetchResponse(restifiedUrl);
-		return response.getSearchResult2();
+		return Jaxb2ModelFactory.createSearchResult(
+				response.getSearchResult2(), this);
 	}
 
 	@Override
