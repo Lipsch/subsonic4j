@@ -18,19 +18,27 @@
  */
 package ch.lipsch.subsonic4j.model.impl;
 
+import ch.lipsch.subsonic4j.SubsonicException;
+import ch.lipsch.subsonic4j.SubsonicException.ErrorType;
 import ch.lipsch.subsonic4j.SubsonicService;
+import ch.lipsch.subsonic4j.internal.InternalSubsonicService;
 import ch.lipsch.subsonic4j.tools.StateChecker;
 
 public abstract class AbstractSubsonicModelObject {
 
-	private final SubsonicService service;
+	private final InternalSubsonicService service;
 
 	public AbstractSubsonicModelObject(SubsonicService service) {
 		StateChecker.check(service, "service");
-		this.service = service;
+		if (!(service instanceof InternalSubsonicService)) {
+			throw new SubsonicException(
+					"A subsonic service implementation must implement InternalSubsonicService",
+					ErrorType.GENERIC);
+		}
+		this.service = (InternalSubsonicService) service;
 	}
 
-	public SubsonicService getService() {
+	public InternalSubsonicService getService() {
 		return service;
 	}
 }

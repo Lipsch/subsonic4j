@@ -18,12 +18,12 @@
  */
 package ch.lipsch.subsonic4j.model;
 
-import java.util.List;
+import java.util.Iterator;
 
 public interface SearchResult extends SubsonicModelObject {
-	public List<Song> getSongs();
+	public Iterator<Song> getSongs();
 
-	public List<Directory> getAlbums();
+	public Iterator<Directory> getAlbums();
 
-	public List<Artist> getArtists();
+	public Iterator<Artist> getArtists();
 }
