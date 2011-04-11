@@ -98,7 +98,7 @@ public final class Jaxb2ModelFactory {
 		return createArtistList(jaxbArtists, service);
 	}
 
-	private static List<Artist> createArtistList(
+	public static List<Artist> createArtistList(
 			List<org.subsonic.restapi.Artist> jaxbArtists,
 			SubsonicService service) {
 		List<Artist> artists = new ArrayList<Artist>();
@@ -244,16 +244,18 @@ public final class Jaxb2ModelFactory {
 	}
 
 	public static SearchResult createSearchResult(SearchResult2 jaxbSearch,
-			SubsonicService service) {
+			SearchResultImpl.SearchParams searchParams, SubsonicService service) {
 		StateChecker.check(jaxbSearch, "jaxbSearch");
 		StateChecker.check(service, "service");
+		StateChecker.check(searchParams, "searchParams");
 
 		List<Song> songs = createSongs(jaxbSearch.getSong(), service);
 		List<Artist> artists = createArtistList(jaxbSearch.getArtist(), service);
 		List<Directory> albums = createDirectories(jaxbSearch.getAlbum(),
 				service);
 
-		return new SearchResultImpl(songs, albums, artists, service);
+		return new SearchResultImpl(songs, albums, artists, searchParams,
+				service);
 	}
 
 	/**
@@ -266,7 +268,7 @@ public final class Jaxb2ModelFactory {
 	 *            The subsonic service. Must not be <code>null</code>.
 	 * @return The converted list. Returns never <code>null</code>.
 	 */
-	private static List<Directory> createDirectories(List<Child> jaxbDirs,
+	public static List<Directory> createDirectories(List<Child> jaxbDirs,
 			SubsonicService service) {
 		List<Directory> directories = new ArrayList<Directory>();
 

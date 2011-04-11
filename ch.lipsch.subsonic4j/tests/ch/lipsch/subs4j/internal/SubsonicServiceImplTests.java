@@ -26,6 +26,7 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
@@ -35,12 +36,13 @@ import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.subsonic.restapi.SearchResult2;
 
 import ch.lipsch.subs4j.TestConfig;
 import ch.lipsch.subsonic4j.StreamListener;
 import ch.lipsch.subsonic4j.SubsonicException;
 import ch.lipsch.subsonic4j.SubsonicFactory;
-import ch.lipsch.subsonic4j.SubsonicService;
+import ch.lipsch.subsonic4j.internal.InternalSubsonicService;
 import ch.lipsch.subsonic4j.model.Artist;
 import ch.lipsch.subsonic4j.model.ChatMessage;
 import ch.lipsch.subsonic4j.model.Directory;
@@ -55,17 +57,18 @@ import ch.lipsch.subsonic4j.model.User;
 import ch.lipsch.subsonic4j.tools.PlaylistTool;
 
 public class SubsonicServiceImplTests extends TestCase implements
-		SubsonicService {
+		InternalSubsonicService {
 
 	private static final String NEW_TEST_SYSOUT = "#####################################";
 
-	private SubsonicService subsonicServiceForUser1 = null;
+	private InternalSubsonicService subsonicServiceForUser1 = null;
 
 	@Override
 	@Before
 	public void setUp() throws MalformedURLException {
-		subsonicServiceForUser1 = SubsonicFactory.createService(new URL(
-				TestConfig.SUBSONIC_URL), TestConfig.USER1_CREDENTIALS);
+		subsonicServiceForUser1 = (InternalSubsonicService) SubsonicFactory
+				.createService(new URL(TestConfig.SUBSONIC_URL),
+						TestConfig.USER1_CREDENTIALS);
 	}
 
 	@After
@@ -207,12 +210,35 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 	@Test
 	public void testSearch() throws SubsonicException {
-		assertNotNull(search("a"));
+		assertNotNull(search("test"));
 	}
 
 	@Test
 	public void testSearchWithPaging() throws SubsonicException {
-		assertNotNull(search("a", 1, 1, 1, 1, 1, 1));
+		System.out.println(NEW_TEST_SYSOUT);
+		System.out.println("testSearchWithPaging:");
+
+		SearchResult search = search("test");
+		Iterator<Directory> albums = search.getAlbums();
+		System.out.println("Albums:");
+		while (albums.hasNext()) {
+			Directory album = albums.next();
+			System.out.println(album);
+		}
+
+		Iterator<Artist> artists = search.getArtists();
+		System.out.println("Artists:");
+		while (artists.hasNext()) {
+			Artist artist = artists.next();
+			System.out.println(artist);
+		}
+
+		Iterator<Song> songs = search.getSongs();
+		System.out.println("Songs:");
+		while (songs.hasNext()) {
+			Song song = songs.next();
+			System.out.println(song);
+		}
 	}
 
 	@Override
@@ -221,7 +247,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 	}
 
 	@Override
-	public SearchResult search(String query, Integer artistCount,
+	public SearchResult2 search(String query, Integer artistCount,
 			Integer artistOffset, Integer albumCound, Integer albumOffset,
 			Integer songCount, Integer songOffset) throws SubsonicException {
 		return subsonicServiceForUser1.search(query, artistCount, artistOffset,

@@ -21,6 +21,7 @@ package ch.lipsch.subsonic4j;
 import java.util.Calendar;
 import java.util.List;
 
+import ch.lipsch.subsonic4j.internal.InternalSubsonicService;
 import ch.lipsch.subsonic4j.model.Artist;
 import ch.lipsch.subsonic4j.model.ChatMessage;
 import ch.lipsch.subsonic4j.model.Directory;
@@ -34,12 +35,18 @@ import ch.lipsch.subsonic4j.model.Song;
 import ch.lipsch.subsonic4j.model.User;
 
 /**
+ * Interface for accessing the subsonic service. Instances of this service can
+ * be obtained through {@link SubsonicFactory}. Implementations of this
+ * interface must be thread-safe.
+ * 
+ * Classes implementing this interface must implement
+ * {@link InternalSubsonicService}.
+ * 
  * Please note that access to the REST API requires that the server has a valid
  * license (after a 30-day trial period). To get a license key you can give a
  * donation to the Subsonic project.
  * 
  * @author Erwin Betschart
- * 
  */
 public interface SubsonicService {
 
@@ -90,28 +97,28 @@ public interface SubsonicService {
 	}
 
 	/**
-	 * Used to test connectivity with the server.
+	 * Used to test if the configured subsonic service is reachable.
 	 * 
-	 * @since 1.0.0
 	 * @throws SubsonicException
+	 *             In case the service is unreachable.
 	 */
 	public void ping() throws SubsonicException;
 
 	/**
-	 * Get details about the software license. Takes no extra parameters.
+	 * Get details about the software license of the subsonic server.
 	 * 
 	 * @return The license.
-	 * @since 1.0.0
 	 * @throws SubsonicException
+	 *             In case of a problem.
 	 */
 	public License getLicense() throws SubsonicException;
 
 	/**
 	 * Returns all configured music folders.
 	 * 
-	 * @return The music folders.
-	 * @since 1.0.0
+	 * @return A list of music folders. I never <code>null</code>.
 	 * @throws SubsonicException
+	 *             In case of errors.
 	 */
 	public List<MusicFolder> getMusicFolders() throws SubsonicException;
 
@@ -130,64 +137,51 @@ public interface SubsonicService {
 	 * 
 	 * @param musicFolder
 	 *            If specified, only return artists in the given music folder.
-	 *            See getMusicFolders. May be <code>null</code>
+	 *            See {@link #getMusicFolders()}. May be <code>null</code>
 	 * @param ifModifiedSince
-	 *            If specified, only return a result if the artist collection
+	 *            If specified, only returns a result if the artist collection
 	 *            has changed since the given time. May be <code>null</code>
-	 * @return
-	 * @since 1.0.0
+	 * @return A list of indexes of artists.
 	 * @throws SubsonicException
+	 *             In case of a problem.
 	 */
 	public List<Index> getIndexes(MusicFolder musicFolder,
 			Calendar ifModifiedSince) throws SubsonicException;
 
 	/**
-	 * Returns a listing of all files in a music directory. Typically used to
-	 * get list of albums for an artist, or list of songs for an album.
+	 * Returns a listing of all files in a music directory.
 	 * 
 	 * @param musicFolder
 	 *            The music folder. Obtained by calls to getIndexes or
 	 *            getMusicDirectory
-	 * @return
-	 * @since 1.0.0
+	 * @return A directory containig songs and subdirectories.
 	 * @throws SubsonicException
+	 *             In case of problems.
 	 */
 	public ch.lipsch.subsonic4j.model.Directory getMusicDirectory(
 			MusicFolder musicFoler) throws SubsonicException;
 
 	/**
-	 * Returns a listing of all files in a music directory. Typically used to
-	 * get list of albums for an artist, or list of songs for an album.
+	 * Returns a listing of all files in an artist directory.
 	 * 
 	 * @param artist
-	 *            The music folder. Obtained by calls to getIndexes or
+	 *            The music folder. Obtained by calls to
+	 *            {@link #getIndexes(MusicFolder, Calendar)} or
 	 *            getMusicDirectory
-	 * @return
-	 * @since 1.0.0
+	 * @return A directory containing songs and subdirectories of the given
+	 *         artists.
 	 * @throws SubsonicException
+	 *             In case of problems.
 	 */
 	public ch.lipsch.subsonic4j.model.Directory getMusicDirectory(Artist artist)
 			throws SubsonicException;
 
-	/**
-	 * Returns a listing of all files in a music directory. Typically used to
-	 * get list of albums for an artist, or list of songs for an album.
-	 * 
-	 * @param folderId
-	 *            The music folder. Obtained by calls to getIndexes or
-	 *            getMusicDirectory
-	 * @return
-	 * @since 1.0.0
-	 * @throws SubsonicException
-	 */
-	public ch.lipsch.subsonic4j.model.Directory getMusicDirectory(
-			String folderId);
-
+	// TODO go on here with jdoc 
 	/**
 	 * Returns albums, artists and songs matching the given search criteria.
 	 * 
 	 * @param query
-	 *            Search query.
+	 *            Search query. Must not be <code>null</code>.
 	 * @return May return only a subset of all found item. If all items should
 	 *         be received call
 	 *         {@link #search(String, Integer, Integer, Integer, Integer, Integer, Integer)}
@@ -196,32 +190,6 @@ public interface SubsonicService {
 	 * @throws SubsonicException
 	 */
 	public SearchResult search(String query) throws SubsonicException;
-
-	/**
-	 * Returns albums, artists and songs matching the given search criteria.
-	 * Supports paging through the result.
-	 * 
-	 * @param query
-	 *            Search query.
-	 * @param artistCount
-	 *            Maximum number of artists to return. Default: 20
-	 * @param artistOffset
-	 *            Search result offset for artists. Used for paging. Default: 0
-	 * @param albumCound
-	 *            Maximum number of albums to return. Default: 20
-	 * @param albumOffset
-	 *            Search result offset for albums. Used for paging. Default:0
-	 * @param songCount
-	 *            Maximum number of songs to return. Default: 20
-	 * @param songOffset
-	 *            Search result offset for songs. Used for paging. Default: 0
-	 * @return
-	 * @since 1.4.0
-	 * @throws SubsonicException
-	 */
-	public SearchResult search(String query, Integer artistCount,
-			Integer artistOffset, Integer albumCound, Integer albumOffset,
-			Integer songCount, Integer songOffset) throws SubsonicException;
 
 	/**
 	 * Returns the ID and name of all saved playlists.

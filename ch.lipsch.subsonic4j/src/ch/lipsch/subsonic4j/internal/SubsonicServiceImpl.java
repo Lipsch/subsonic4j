@@ -47,12 +47,12 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.subsonic.restapi.Response;
+import org.subsonic.restapi.SearchResult2;
 
 import ch.lipsch.subsonic4j.CredentialsProvider;
 import ch.lipsch.subsonic4j.StreamListener;
 import ch.lipsch.subsonic4j.SubsonicException;
 import ch.lipsch.subsonic4j.SubsonicException.ErrorType;
-import ch.lipsch.subsonic4j.SubsonicService;
 import ch.lipsch.subsonic4j.model.Artist;
 import ch.lipsch.subsonic4j.model.ChatMessage;
 import ch.lipsch.subsonic4j.model.Directory;
@@ -64,6 +64,7 @@ import ch.lipsch.subsonic4j.model.Playlist;
 import ch.lipsch.subsonic4j.model.SearchResult;
 import ch.lipsch.subsonic4j.model.Song;
 import ch.lipsch.subsonic4j.model.User;
+import ch.lipsch.subsonic4j.model.impl.SearchResultImpl;
 import ch.lipsch.subsonic4j.tools.StateChecker;
 
 /**
@@ -72,7 +73,7 @@ import ch.lipsch.subsonic4j.tools.StateChecker;
  * @author Erwin Betschart
  * 
  */
-public class SubsonicServiceImpl implements SubsonicService {
+public class SubsonicServiceImpl implements InternalSubsonicService {
 	private static final String JAXB_CONTEXT_PATH = "org.subsonic.restapi";
 	private static final String PATH_PING = "ping.view";
 	private static final String PATH_LICENSE = "getLicense.view";
@@ -99,6 +100,8 @@ public class SubsonicServiceImpl implements SubsonicService {
 	private static final String PATH_GET_COVER_ART = "getCoverArt.view";
 	private static final String HTTP_CONTENT_TYPE_TEXT_XML = "text/xml";
 	private static final String HTTP_RESPONSE_HEADER_CONTENT_TYPE = "Content-Type";
+
+	private static final Integer DEFAULT_SEARCH_COUNT = new Integer(20);
 	/**
 	 * The root url of the subsonic server. Access must be synchronized by
 	 * {@link SubsonicServiceImpl} instance.
@@ -311,6 +314,13 @@ public class SubsonicServiceImpl implements SubsonicService {
 	public List<Index> getIndexes(MusicFolder musicFolder,
 			Calendar ifModifiedSince) throws SubsonicException {
 		throwIfDisposed();
+		if ((musicFolder == null && ifModifiedSince != null)
+				|| (musicFolder != null && ifModifiedSince == null)) {
+			throw new SubsonicException(
+					"Both parameters musicFolder and ifModifiedSince must be null or set.",
+					ErrorType.GENERIC);
+		}
+
 		String restifiedUrl = SubsonicUtil.restifySubsonicUrl(getUrl(),
 				PATH_GET_INDEXES);
 		restifiedUrl = SubsonicUtil.appendCredentialsAsFirstParam(restifiedUrl,
@@ -363,11 +373,24 @@ public class SubsonicServiceImpl implements SubsonicService {
 
 	@Override
 	public SearchResult search(String query) throws SubsonicException {
-		return search(query, 20, 0, 20, 0, 20, 0);
+		SearchResult2 result2 = search(query, DEFAULT_SEARCH_COUNT, 0,
+				DEFAULT_SEARCH_COUNT, 0, DEFAULT_SEARCH_COUNT, 0);
+
+		SearchResultImpl.SearchParams searchParams = new SearchResultImpl.SearchParams();
+		searchParams.setAlbumCount(DEFAULT_SEARCH_COUNT);
+		searchParams.setAlbumOffset(0);
+		searchParams.setArtistCount(DEFAULT_SEARCH_COUNT);
+		searchParams.setArtistOffset(0);
+		searchParams.setQuery(query);
+		searchParams.setSongCount(DEFAULT_SEARCH_COUNT);
+		searchParams.setSongOffset(0);
+
+		return Jaxb2ModelFactory
+				.createSearchResult(result2, searchParams, this);
 	}
 
 	@Override
-	public SearchResult search(String query, Integer artistCount,
+	public SearchResult2 search(String query, Integer artistCount,
 			Integer artistOffset, Integer albumCount, Integer albumOffset,
 			Integer songCount, Integer songOffset) throws SubsonicException {
 		throwIfDisposed();
@@ -391,8 +414,8 @@ public class SubsonicServiceImpl implements SubsonicService {
 
 		Response response;
 		response = fetchResponse(restifiedUrl);
-		return Jaxb2ModelFactory.createSearchResult(
-				response.getSearchResult2(), this);
+
+		return response.getSearchResult2();
 	}
 
 	@Override
