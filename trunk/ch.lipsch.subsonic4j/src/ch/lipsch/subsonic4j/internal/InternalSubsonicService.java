@@ -18,10 +18,13 @@
  */
 package ch.lipsch.subsonic4j.internal;
 
+import java.util.List;
+
 import org.subsonic.restapi.SearchResult2;
 
 import ch.lipsch.subsonic4j.SubsonicException;
 import ch.lipsch.subsonic4j.SubsonicService;
+import ch.lipsch.subsonic4j.model.Song;
 
 public interface InternalSubsonicService extends SubsonicService {
 
@@ -64,4 +67,15 @@ public interface InternalSubsonicService extends SubsonicService {
 	public SearchResult2 search(String query, Integer artistCount,
 			Integer artistOffset, Integer albumCount, Integer albumOffset,
 			Integer songCount, Integer songOffset) throws SubsonicException;
+
+	/**
+	 * Returns a listing of files in a saved playlist.
+	 * 
+	 * @param id
+	 *            ID of the playlist to return, as obtained by getPlaylists.
+	 * @return
+	 * @since 1.0.0
+	 * @throws SubsonicException
+	 */
+	public List<Song> getPlayList(String id) throws SubsonicException;
 }
