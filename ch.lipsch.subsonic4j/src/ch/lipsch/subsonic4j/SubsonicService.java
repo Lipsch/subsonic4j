@@ -176,41 +176,27 @@ public interface SubsonicService {
 	public ch.lipsch.subsonic4j.model.Directory getMusicDirectory(Artist artist)
 			throws SubsonicException;
 
-	// TODO go on here with jdoc 
 	/**
 	 * Returns albums, artists and songs matching the given search criteria.
 	 * 
 	 * @param query
 	 *            Search query. Must not be <code>null</code>.
-	 * @return May return only a subset of all found item. If all items should
-	 *         be received call
-	 *         {@link #search(String, Integer, Integer, Integer, Integer, Integer, Integer)}
-	 *         which has paging support.
-	 * @since 1.4.0
+	 * @return A search result which is loaded lazily.
 	 * @throws SubsonicException
+	 *             In case of problems,
 	 */
 	public SearchResult search(String query) throws SubsonicException;
 
 	/**
-	 * Returns the ID and name of all saved playlists.
+	 * Fetch all playlists.
 	 * 
-	 * @return
-	 * @since 1.0.0
+	 * @return Returns the ID and name of all saved playlists.
 	 * @throws SubsonicException
+	 *             In case of errors.
 	 */
 	public List<Playlist> getPlayLists() throws SubsonicException;
 
-	/**
-	 * Returns a listing of files in a saved playlist.
-	 * 
-	 * @param id
-	 *            ID of the playlist to return, as obtained by getPlaylists.
-	 * @return
-	 * @since 1.0.0
-	 * @throws SubsonicException
-	 */
-	public List<Song> getPlayList(String id) throws SubsonicException;
-
+	// TODO go on here with jdoc
 	/**
 	 * Creates or updates a saved playlist. Note: The user must be authorized to
 	 * create playlists (see Settings > Users > User is allowed to create and
@@ -227,8 +213,8 @@ public interface SubsonicService {
 	 * @since 1.2.0
 	 * @throws SubsonicException
 	 */
-	public void createPlaylist(String playlistId, String name,
-			List<String> songIds) throws SubsonicException;
+	public void createPlaylist(String playlistId, String name, List<Song> songs)
+			throws SubsonicException;
 
 	/**
 	 * Deletes a saved playlist.

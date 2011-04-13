@@ -278,7 +278,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 	public void testCreateAndDeletePlaylist() throws SubsonicException {
 		String newPlaylistName = createUnusedPlaylistName();
 
-		createPlaylist(null, newPlaylistName, getRandomSongIds());
+		createPlaylist(null, newPlaylistName, getRandomSongs());
 
 		deletePlaylist(PlaylistTool.findPlaylistIdByName(newPlaylistName,
 				subsonicServiceForUser1));
@@ -318,22 +318,22 @@ public class SubsonicServiceImplTests extends TestCase implements
 	public void testUpdatePlaylist() throws SubsonicException {
 		String newPlaylistName = createUnusedPlaylistName();
 
-		List<String> randomSongIds = getRandomSongIds();
-		createPlaylist(null, newPlaylistName, randomSongIds);
+		List<Song> randomSongs = getRandomSongs();
+		createPlaylist(null, newPlaylistName, randomSongs);
 
-		randomSongIds.addAll(getRandomSongIds());
+		randomSongs.addAll(getRandomSongs());
 
 		createPlaylist(PlaylistTool.findPlaylistIdByName(newPlaylistName,
-				subsonicServiceForUser1), null, randomSongIds);
+				subsonicServiceForUser1), null, randomSongs);
 
 		deletePlaylist(PlaylistTool.findPlaylistIdByName(newPlaylistName,
 				subsonicServiceForUser1));
 	}
 
 	@Override
-	public void createPlaylist(String playlistId, String name,
-			List<String> songIds) throws SubsonicException {
-		subsonicServiceForUser1.createPlaylist(playlistId, name, songIds);
+	public void createPlaylist(String playlistId, String name, List<Song> songs)
+			throws SubsonicException {
+		subsonicServiceForUser1.createPlaylist(playlistId, name, songs);
 	}
 
 	@Override
