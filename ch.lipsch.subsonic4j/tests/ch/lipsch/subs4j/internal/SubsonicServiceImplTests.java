@@ -61,12 +61,12 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 	private static final String NEW_TEST_SYSOUT = "#####################################";
 
-	private InternalSubsonicService subsonicServiceForUser1 = null;
+	private InternalSubsonicService subsonicService = null;
 
 	@Override
 	@Before
 	public void setUp() throws MalformedURLException {
-		subsonicServiceForUser1 = (InternalSubsonicService) SubsonicFactory
+		subsonicService = (InternalSubsonicService) SubsonicFactory
 				.createService(new URL(TestConfig.SUBSONIC_URL),
 						TestConfig.USER1_CREDENTIALS);
 	}
@@ -83,7 +83,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 	@Override
 	public void ping() throws SubsonicException {
-		subsonicServiceForUser1.ping();
+		subsonicService.ping();
 	}
 
 	@Test
@@ -100,7 +100,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 	@Override
 	public License getLicense() throws SubsonicException {
-		return subsonicServiceForUser1.getLicense();
+		return subsonicService.getLicense();
 	}
 
 	@Test
@@ -117,7 +117,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 	@Override
 	public List<ch.lipsch.subsonic4j.model.MusicFolder> getMusicFolders()
 			throws SubsonicException {
-		return subsonicServiceForUser1.getMusicFolders();
+		return subsonicService.getMusicFolders();
 	}
 
 	@Test
@@ -137,7 +137,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 	@Override
 	public List<NowPlaying> getNowPlaying() throws SubsonicException {
-		return subsonicServiceForUser1.getNowPlaying();
+		return subsonicService.getNowPlaying();
 	}
 
 	@Test
@@ -174,7 +174,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 	public List<ch.lipsch.subsonic4j.model.Index> getIndexes(
 			MusicFolder musicFolder, Calendar ifModifiedSince)
 			throws SubsonicException {
-		return subsonicServiceForUser1.getIndexes(musicFolder, ifModifiedSince);
+		return subsonicService.getIndexes(musicFolder, ifModifiedSince);
 	}
 
 	@Test
@@ -187,7 +187,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 	@Override
 	public ch.lipsch.subsonic4j.model.Directory getMusicDirectory(
 			MusicFolder musicFolder) throws SubsonicException {
-		return subsonicServiceForUser1.getMusicDirectory(musicFolder);
+		return subsonicService.getMusicDirectory(musicFolder);
 	}
 
 	@Test
@@ -205,7 +205,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 	@Override
 	public ch.lipsch.subsonic4j.model.Directory getMusicDirectory(Artist artist)
 			throws SubsonicException {
-		return subsonicServiceForUser1.getMusicDirectory(artist);
+		return subsonicService.getMusicDirectory(artist);
 	}
 
 	@Test
@@ -243,14 +243,14 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 	@Override
 	public SearchResult search(String query) throws SubsonicException {
-		return subsonicServiceForUser1.search(query);
+		return subsonicService.search(query);
 	}
 
 	@Override
 	public SearchResult2 search(String query, Integer artistCount,
 			Integer artistOffset, Integer albumCound, Integer albumOffset,
 			Integer songCount, Integer songOffset) throws SubsonicException {
-		return subsonicServiceForUser1.search(query, artistCount, artistOffset,
+		return subsonicService.search(query, artistCount, artistOffset,
 				albumCound, albumOffset, songCount, songOffset);
 	}
 
@@ -261,7 +261,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 	@Override
 	public List<Playlist> getPlayLists() throws SubsonicException {
-		return subsonicServiceForUser1.getPlayLists();
+		return subsonicService.getPlayLists();
 	}
 
 	@Test
@@ -271,17 +271,17 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 	@Override
 	public List<Song> getPlayList(String id) throws SubsonicException {
-		return subsonicServiceForUser1.getPlayList(id);
+		return subsonicService.getPlayList(id);
 	}
 
 	@Test
 	public void testCreateAndDeletePlaylist() throws SubsonicException {
 		String newPlaylistName = createUnusedPlaylistName();
 
-		createPlaylist(null, newPlaylistName, getRandomSongs());
+		createOrUpdatePlaylist(null, newPlaylistName, getRandomSongs());
 
 		deletePlaylist(PlaylistTool.findPlaylistIdByName(newPlaylistName,
-				subsonicServiceForUser1));
+				subsonicService));
 	}
 
 	private String createUnusedPlaylistName() throws SubsonicException {
@@ -319,26 +319,26 @@ public class SubsonicServiceImplTests extends TestCase implements
 		String newPlaylistName = createUnusedPlaylistName();
 
 		List<Song> randomSongs = getRandomSongs();
-		createPlaylist(null, newPlaylistName, randomSongs);
+		createOrUpdatePlaylist(null, newPlaylistName, randomSongs);
 
 		randomSongs.addAll(getRandomSongs());
 
-		createPlaylist(PlaylistTool.findPlaylistIdByName(newPlaylistName,
-				subsonicServiceForUser1), null, randomSongs);
+		createOrUpdatePlaylist(PlaylistTool.findPlaylistIdByName(
+				newPlaylistName, subsonicService), null, randomSongs);
 
 		deletePlaylist(PlaylistTool.findPlaylistIdByName(newPlaylistName,
-				subsonicServiceForUser1));
+				subsonicService));
 	}
 
 	@Override
-	public void createPlaylist(String playlistId, String name, List<Song> songs)
-			throws SubsonicException {
-		subsonicServiceForUser1.createPlaylist(playlistId, name, songs);
+	public void createOrUpdatePlaylist(String playlistId, String name,
+			List<Song> songs) throws SubsonicException {
+		subsonicService.createOrUpdatePlaylist(playlistId, name, songs);
 	}
 
 	@Override
 	public void deletePlaylist(String id) throws SubsonicException {
-		subsonicServiceForUser1.deletePlaylist(id);
+		subsonicService.deletePlaylist(id);
 	}
 
 	@Test
@@ -397,7 +397,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 	@Override
 	public void download(String id, StreamListener listener)
 			throws SubsonicException {
-		subsonicServiceForUser1.download(id, listener);
+		subsonicService.download(id, listener);
 	}
 
 	@Test
@@ -461,7 +461,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 	@Override
 	public void stream(String id, BitRate maxBitRate, StreamListener listener)
 			throws SubsonicException {
-		subsonicServiceForUser1.stream(id, maxBitRate, listener);
+		subsonicService.stream(id, maxBitRate, listener);
 	}
 
 	@Test
@@ -527,7 +527,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 	@Override
 	public void getCoverArt(String id, Integer size, StreamListener listener)
 			throws SubsonicException {
-		subsonicServiceForUser1.getCoverArt(id, size, listener);
+		subsonicService.getCoverArt(id, size, listener);
 	}
 
 	@Test
@@ -548,7 +548,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 	@Override
 	public void changePassword(String username, String password)
 			throws SubsonicException {
-		subsonicServiceForUser1.changePassword(username, password);
+		subsonicService.changePassword(username, password);
 	}
 
 	@Test
@@ -558,7 +558,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 	@Override
 	public User getUser(String username) throws SubsonicException {
-		return subsonicServiceForUser1.getUser(username);
+		return subsonicService.getUser(username);
 	}
 
 	@Test
@@ -576,7 +576,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 			Boolean streamRole, Boolean jukeboxRole, Boolean downloadRole,
 			Boolean uploadRole, Boolean playlistRole, Boolean coverArtRole,
 			Boolean commentRole, Boolean podcastRole) throws SubsonicException {
-		subsonicServiceForUser1.createUser(user, password, ldapAuthenticated,
+		subsonicService.createUser(user, password, ldapAuthenticated,
 				adminRole, settingsRole, streamRole, jukeboxRole, downloadRole,
 				uploadRole, playlistRole, coverArtRole, commentRole,
 				podcastRole);
@@ -584,7 +584,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 	@Override
 	public void deleteUser(String username) throws SubsonicException {
-		subsonicServiceForUser1.deleteUser(username);
+		subsonicService.deleteUser(username);
 	}
 
 	@Test
@@ -605,7 +605,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 	@Override
 	public List<ChatMessage> getChatMessages(Calendar since)
 			throws SubsonicException {
-		return subsonicServiceForUser1.getChatMessages(since);
+		return subsonicService.getChatMessages(since);
 	}
 
 	public void testAddChatMessage() throws SubsonicException {
@@ -614,7 +614,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 	@Override
 	public void addChatMessage(String message) throws SubsonicException {
-		subsonicServiceForUser1.addChatMessage(message);
+		subsonicService.addChatMessage(message);
 	}
 
 	@Test
@@ -625,7 +625,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 	@Override
 	public List<Directory> getAlbumList(AlbumType albumType, Integer size,
 			Integer offset) throws SubsonicException {
-		return subsonicServiceForUser1.getAlbumList(albumType, size, offset);
+		return subsonicService.getAlbumList(albumType, size, offset);
 	}
 
 	@Test
@@ -645,7 +645,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 	@Override
 	public List<Song> getRandomSongs() throws SubsonicException {
-		return subsonicServiceForUser1.getRandomSongs();
+		return subsonicService.getRandomSongs();
 	}
 
 	@Test
@@ -668,8 +668,8 @@ public class SubsonicServiceImplTests extends TestCase implements
 	public List<Song> getRandomSongs(Integer size, String genre,
 			Integer fromYear, Integer toYear, MusicFolder musicFolder)
 			throws SubsonicException {
-		// TODO Auto-generated method stub
-		return null;
+		return subsonicService.getRandomSongs(size, genre, fromYear, toYear,
+				musicFolder);
 	}
 
 	@Test
@@ -690,26 +690,48 @@ public class SubsonicServiceImplTests extends TestCase implements
 	@Override
 	public String getLyrics(String artist, String title)
 			throws SubsonicException {
-		return subsonicServiceForUser1.getLyrics(artist, title);
+		return subsonicService.getLyrics(artist, title);
 	}
 
 	@Override
 	public void disposeService() {
-		// ignored
+		subsonicService.disposeService();
 	}
 
 	@Override
 	public boolean isDisposed() {
-		return false;
+		return subsonicService.isDisposed();
+	}
+
+	@Test
+	public void testGetStreamUrl() {
+		fail("TODO");
 	}
 
 	@Override
 	public String getStreamUrl(String id) throws SubsonicException {
-		return subsonicServiceForUser1.getStreamUrl(id);
+		return subsonicService.getStreamUrl(id);
+	}
+
+	@Test
+	public void testGetMusicDirectory() {
+		fail("TODO");
 	}
 
 	@Override
 	public Directory getMusicDirectory(String folderId) {
-		return subsonicServiceForUser1.getMusicDirectory(folderId);
+		return subsonicService.getMusicDirectory(folderId);
+	}
+
+	@Test
+	public void testCreatePlaylist() {
+		fail("TODO");
+	}
+
+	@Override
+	public void createPlaylist(String name, List<Song> songs)
+			throws SubsonicException {
+		subsonicService.createPlaylist(name, songs);
+
 	}
 }

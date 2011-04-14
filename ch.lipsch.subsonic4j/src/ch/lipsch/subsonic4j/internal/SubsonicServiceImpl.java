@@ -447,8 +447,8 @@ public class SubsonicServiceImpl implements InternalSubsonicService {
 	}
 
 	@Override
-	public void createPlaylist(String playlistId, String name, List<Song> songs)
-			throws SubsonicException {
+	public void createOrUpdatePlaylist(String playlistId, String name,
+			List<Song> songs) throws SubsonicException {
 		throw new UnsupportedOperationException(
 				"Update playlist seems not to work.");
 		// TODO -> create a call to update the playlist.
@@ -810,5 +810,11 @@ public class SubsonicServiceImpl implements InternalSubsonicService {
 				Integer.toString(BitRate.BITRATE_DEFAULT.intValue()));
 
 		return restifiedUrl;
+	}
+
+	@Override
+	public void createPlaylist(String name, List<Song> songs)
+			throws SubsonicException {
+		createOrUpdatePlaylist(null, name, songs);
 	}
 }
