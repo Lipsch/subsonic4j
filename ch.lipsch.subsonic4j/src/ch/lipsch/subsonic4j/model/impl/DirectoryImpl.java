@@ -123,18 +123,29 @@ public class DirectoryImpl extends AbstractSubsonicModelObject implements
 			if (directory != null) {
 				for (Child child : directory.getChild()) {
 					if (child.isIsDir()) {
-						subDirectories.add(getService().getMusicDirectory(
-								child.getId()));
+						Directory musicDirectory = getService()
+								.getMusicDirectory(child.getId());
+						synchronized (DirectoryImpl.this) {
+							subDirectories.add(musicDirectory);
+						}
 					} else {
-						songs.add(Jaxb2ModelFactory.createSong(child,
-								getService()));
+						Song song = Jaxb2ModelFactory.createSong(child,
+								getService());
+						synchronized (DirectoryImpl.this) {
+							songs.add(song);
+						}
 					}
 				}
 			} else {
 				Directory musicDir = getService().getMusicDirectory(
 						rootChild.getId());
-				subDirectories.addAll(musicDir.getChildDirectories());
-				songs.addAll(musicDir.getSongs());
+				List<Directory> childDirectories = musicDir
+						.getChildDirectories();
+				List<Song> songs = musicDir.getSongs();
+				synchronized (DirectoryImpl.this) {
+					subDirectories.addAll(childDirectories);
+					songs.addAll(songs);
+				}
 			}
 		}
 

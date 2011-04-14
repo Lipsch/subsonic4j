@@ -101,7 +101,7 @@ public class SubsonicServiceImpl implements InternalSubsonicService {
 	private static final String HTTP_CONTENT_TYPE_TEXT_XML = "text/xml";
 	private static final String HTTP_RESPONSE_HEADER_CONTENT_TYPE = "Content-Type";
 
-	private static final Integer DEFAULT_SEARCH_COUNT = new Integer(20);
+	private static final Integer DEFAULT_SEARCH_COUNT = 20;
 	/**
 	 * The root url of the subsonic server. Access must be synchronized by
 	 * {@link SubsonicServiceImpl} instance.
