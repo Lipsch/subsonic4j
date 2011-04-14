@@ -27,4 +27,10 @@ public interface Playlist extends SubsonicModelObject {
 	public String getId();
 
 	public List<Song> getSongs();
+
+	public void addSongs(List<Song> songs);
+
+	public void removeSongs(List<Song> songs);
+
+	public void deletePlaylist();
 }

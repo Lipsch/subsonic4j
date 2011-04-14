@@ -196,36 +196,21 @@ public interface SubsonicService {
 	 */
 	public List<Playlist> getPlayLists() throws SubsonicException;
 
-	// TODO go on here with jdoc
 	/**
-	 * Creates or updates a saved playlist. Note: The user must be authorized to
-	 * create playlists (see Settings > Users > User is allowed to create and
-	 * delete playlists).
+	 * Creates a playlist. Note: The user must be authorized to create playlists
+	 * (see Settings > Users > User is allowed to create and delete playlists).
 	 * 
-	 * @param playlistId
-	 *            The playlist ID. (required if updating)
 	 * @param name
-	 *            The human-readable name of the playlist. (required if
-	 *            creating)
+	 *            The human-readable name of the playlist.
 	 * @param songIds
-	 *            ID of a song in the playlist. Use one songId parameter for
-	 *            each song in the playlist.
-	 * @since 1.2.0
+	 *            A list of songs to be initially added to the playlist.
 	 * @throws SubsonicException
+	 *             In case of problems.
 	 */
-	public void createPlaylist(String playlistId, String name, List<Song> songs)
+	public void createPlaylist(String name, List<Song> songs)
 			throws SubsonicException;
 
-	/**
-	 * Deletes a saved playlist.
-	 * 
-	 * @param id
-	 *            ID of the playlist to delete, as obtained by getPlaylists.
-	 * @since 1.2.0
-	 * @throws SubsonicException
-	 */
-	public void deletePlaylist(String id) throws SubsonicException;
-
+	// TODO go on here with jdoc
 	/**
 	 * Downloads a given music file.
 	 * 

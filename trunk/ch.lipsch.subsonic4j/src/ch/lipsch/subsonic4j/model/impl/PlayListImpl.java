@@ -66,4 +66,20 @@ public class PlayListImpl extends AbstractSubsonicModelObject implements
 
 		return songs;
 	}
+
+	@Override
+	public void addSongs(List<Song> songs) {
+		throw new UnsupportedOperationException("Not yet implemented");
+
+	}
+
+	@Override
+	public void removeSongs(List<Song> songs) {
+		throw new UnsupportedOperationException("Not yet implemented");
+	}
+
+	@Override
+	public void deletePlaylist() {
+		throw new UnsupportedOperationException("Not yet implemented");
+	}
 }

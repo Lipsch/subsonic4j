@@ -24,12 +24,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import ch.lipsch.subs4j.internal.PlaylistTest;
 import ch.lipsch.subs4j.internal.RLServiceTest;
 import ch.lipsch.subs4j.internal.Subsonic4PMSLikeTest;
 import ch.lipsch.subs4j.internal.SubsonicServiceImplTests;
 
 @RunWith(Suite.class)
 @SuiteClasses({ SubsonicServiceImplTests.class, RLServiceTest.class,
-		Subsonic4PMSLikeTest.class })
+		Subsonic4PMSLikeTest.class, PlaylistTest.class })
 public class AllTests extends TestSuite {
 }

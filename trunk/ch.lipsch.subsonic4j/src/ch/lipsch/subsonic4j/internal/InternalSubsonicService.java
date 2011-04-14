@@ -78,4 +78,33 @@ public interface InternalSubsonicService extends SubsonicService {
 	 * @throws SubsonicException
 	 */
 	public List<Song> getPlayList(String id) throws SubsonicException;
+
+	/**
+	 * Creates or updates a saved playlist. Note: The user must be authorized to
+	 * create playlists (see Settings > Users > User is allowed to create and
+	 * delete playlists).
+	 * 
+	 * @param playlistId
+	 *            The playlist ID. (required if updating)
+	 * @param name
+	 *            The human-readable name of the playlist. (required if
+	 *            creating)
+	 * @param songIds
+	 *            ID of a song in the playlist. Use one songId parameter for
+	 *            each song in the playlist.
+	 * @since 1.2.0
+	 * @throws SubsonicException
+	 */
+	public void createOrUpdatePlaylist(String playlistId, String name,
+			List<Song> songs) throws SubsonicException;
+
+	/**
+	 * Deletes a saved playlist.
+	 * 
+	 * @param id
+	 *            ID of the playlist to delete, as obtained by getPlaylists.
+	 * @since 1.2.0
+	 * @throws SubsonicException
+	 */
+	public void deletePlaylist(String id) throws SubsonicException;
 }
