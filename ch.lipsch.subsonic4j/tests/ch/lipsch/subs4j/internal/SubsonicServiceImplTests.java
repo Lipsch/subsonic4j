@@ -73,7 +73,7 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 	@After
 	public void teardown() {
-
+		subsonicService.disposeService();
 	}
 
 	@Test
@@ -192,14 +192,13 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 	@Test
 	public void testGetMusicDirectoryWithArtist() throws SubsonicException {
-		throw new UnsupportedOperationException("reactivate");
-		// Indexes indexes = getIndexes(null, null);
-		// Index index = indexes.getIndex().get(0);
-		//
-		// Directory musicDirectory = getMusicDirectory(index.getArtist().get(0)
-		// .getId());
-		//
-		// assertNotNull(musicDirectory);
+		List<Index> indexes = getIndexes(null, null);
+		Index index = indexes.get(0);
+
+		Directory musicDirectory = getMusicDirectory(index.getArtists().get(0)
+				.getId());
+
+		assertNotNull(musicDirectory);
 	}
 
 	@Override
@@ -270,8 +269,8 @@ public class SubsonicServiceImplTests extends TestCase implements
 	}
 
 	@Override
-	public List<Song> getPlayList(String id) throws SubsonicException {
-		return subsonicService.getPlayList(id);
+	public List<Song> getPlaylistSongs(String id) throws SubsonicException {
+		return subsonicService.getPlaylistSongs(id);
 	}
 
 	@Test
@@ -280,8 +279,8 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 		createOrUpdatePlaylist(null, newPlaylistName, getRandomSongs());
 
-		deletePlaylist(PlaylistTool.findPlaylistIdByName(newPlaylistName,
-				subsonicService));
+		PlaylistTool.findPlaylistIdByName(newPlaylistName, subsonicService)
+				.delete();
 	}
 
 	private String createUnusedPlaylistName() throws SubsonicException {
@@ -323,11 +322,12 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 		randomSongs.addAll(getRandomSongs());
 
-		createOrUpdatePlaylist(PlaylistTool.findPlaylistIdByName(
-				newPlaylistName, subsonicService), null, randomSongs);
+		createOrUpdatePlaylist(
+				PlaylistTool.findPlaylistIdByName(newPlaylistName,
+						subsonicService).getId(), null, randomSongs);
 
-		deletePlaylist(PlaylistTool.findPlaylistIdByName(newPlaylistName,
-				subsonicService));
+		PlaylistTool.findPlaylistIdByName(newPlaylistName, subsonicService)
+				.delete();
 	}
 
 	@Override
@@ -705,7 +705,10 @@ public class SubsonicServiceImplTests extends TestCase implements
 
 	@Test
 	public void testGetStreamUrl() {
-		fail("TODO");
+		List<Song> randomSongs = getRandomSongs();
+		String songId = randomSongs.get(0).getId();
+		String streamUrl = getStreamUrl(songId);
+		assertNotNull(streamUrl);
 	}
 
 	@Override
@@ -729,9 +732,9 @@ public class SubsonicServiceImplTests extends TestCase implements
 	}
 
 	@Override
-	public void createPlaylist(String name, List<Song> songs)
+	public Playlist createPlaylist(String name, List<Song> songs)
 			throws SubsonicException {
-		subsonicService.createPlaylist(name, songs);
+		return subsonicService.createPlaylist(name, songs);
 
 	}
 }

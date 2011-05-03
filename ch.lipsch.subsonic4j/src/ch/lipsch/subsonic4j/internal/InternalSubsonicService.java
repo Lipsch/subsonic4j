@@ -77,7 +77,7 @@ public interface InternalSubsonicService extends SubsonicService {
 	 * @since 1.0.0
 	 * @throws SubsonicException
 	 */
-	public List<Song> getPlayList(String id) throws SubsonicException;
+	public List<Song> getPlaylistSongs(String id) throws SubsonicException;
 
 	/**
 	 * Creates or updates a saved playlist. Note: The user must be authorized to

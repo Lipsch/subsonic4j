@@ -207,7 +207,7 @@ public interface SubsonicService {
 	 * @throws SubsonicException
 	 *             In case of problems.
 	 */
-	public void createPlaylist(String name, List<Song> songs)
+	public Playlist createPlaylist(String name, List<Song> songs)
 			throws SubsonicException;
 
 	// TODO go on here with jdoc

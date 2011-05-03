@@ -32,5 +32,5 @@ public interface Playlist extends SubsonicModelObject {
 
 	public void removeSongs(List<Song> songs);
 
-	public void deletePlaylist();
+	public void delete();
 }

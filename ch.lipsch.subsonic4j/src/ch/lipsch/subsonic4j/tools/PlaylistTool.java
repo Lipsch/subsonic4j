@@ -24,15 +24,30 @@ import ch.lipsch.subsonic4j.model.Playlist;
 
 public final class PlaylistTool {
 
-	public static String findPlaylistIdByName(String playlistName,
+	/**
+	 * Searches for a playlist with the given name.
+	 * 
+	 * @param playlistName
+	 *            The name of the playlist to search for. Must not be
+	 *            <code>null</code>.
+	 * @param service
+	 *            {@link SubsonicService} on which to search for the playlist.
+	 *            Must not be <code>null</code>.
+	 * @return If found a {@link Playlist} else <code>null</code>.
+	 * @throws SubsonicException
+	 *             In case of errors.
+	 */
+	public static Playlist findPlaylistIdByName(String playlistName,
 			SubsonicService service) throws SubsonicException {
-		String playListId = null;
+		StateChecker.check(playlistName, "playlistName");
+		StateChecker.check(service, "service");
+		Playlist foundPlaylist = null;
 		for (Playlist playList : service.getPlayLists()) {
 			if (playList.getName().equals(playlistName)) {
-				playListId = playList.getId();
+				foundPlaylist = playList;
 				break;
 			}
 		}
-		return playListId;
+		return foundPlaylist;
 	}
 }

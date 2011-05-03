@@ -65,6 +65,7 @@ import ch.lipsch.subsonic4j.model.SearchResult;
 import ch.lipsch.subsonic4j.model.Song;
 import ch.lipsch.subsonic4j.model.User;
 import ch.lipsch.subsonic4j.model.impl.SearchResultImpl;
+import ch.lipsch.subsonic4j.tools.PlaylistTool;
 import ch.lipsch.subsonic4j.tools.StateChecker;
 
 /**
@@ -432,7 +433,7 @@ public class SubsonicServiceImpl implements InternalSubsonicService {
 	}
 
 	@Override
-	public List<Song> getPlayList(String id) throws SubsonicException {
+	public List<Song> getPlaylistSongs(String id) throws SubsonicException {
 		throwIfDisposed();
 		String restifiedUrl = SubsonicUtil.restifySubsonicUrl(getUrl(),
 				PATH_GET_PLAYLIST);
@@ -449,24 +450,20 @@ public class SubsonicServiceImpl implements InternalSubsonicService {
 	@Override
 	public void createOrUpdatePlaylist(String playlistId, String name,
 			List<Song> songs) throws SubsonicException {
-		throw new UnsupportedOperationException(
-				"Update playlist seems not to work.");
-		// TODO -> create a call to update the playlist.
-		// throwIfDisposed();
-		// String restifiedUrl = SubsonicUtil.restifySubsonicUrl(getUrl(),
-		// PATH_CREATE_PLAYLIST);
-		// restifiedUrl =
-		// SubsonicUtil.appendCredentialsAsFirstParam(restifiedUrl,
-		// getCredentialsProvider());
-		// restifiedUrl = SubsonicUtil.appendIfSet(restifiedUrl, "playlistId",
-		// playlistId);
-		// restifiedUrl = SubsonicUtil.appendIfSet(restifiedUrl, "name", name);
-		// for (String songId : songIds) {
-		// restifiedUrl = SubsonicUtil.appendIfSet(restifiedUrl, "songId",
-		// songId);
-		// }
-		//
-		// fetchResponse(restifiedUrl);
+		throwIfDisposed();
+		String restifiedUrl = SubsonicUtil.restifySubsonicUrl(getUrl(),
+				PATH_CREATE_PLAYLIST);
+		restifiedUrl = SubsonicUtil.appendCredentialsAsFirstParam(restifiedUrl,
+				getCredentialsProvider());
+		restifiedUrl = SubsonicUtil.appendIfSet(restifiedUrl, "playlistId",
+				playlistId);
+		restifiedUrl = SubsonicUtil.appendIfSet(restifiedUrl, "name", name);
+		for (Song song : songs) {
+			restifiedUrl = SubsonicUtil.appendIfSet(restifiedUrl, "songId",
+					song.getId());
+		}
+
+		fetchResponse(restifiedUrl);
 	}
 
 	@Override
@@ -813,8 +810,9 @@ public class SubsonicServiceImpl implements InternalSubsonicService {
 	}
 
 	@Override
-	public void createPlaylist(String name, List<Song> songs)
+	public Playlist createPlaylist(String name, List<Song> songs)
 			throws SubsonicException {
 		createOrUpdatePlaylist(null, name, songs);
+		return PlaylistTool.findPlaylistIdByName(name, this);
 	}
 }

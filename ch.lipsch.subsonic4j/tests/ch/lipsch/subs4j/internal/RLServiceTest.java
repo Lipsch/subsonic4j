@@ -19,39 +19,46 @@
 package ch.lipsch.subs4j.internal;
 
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.MessageFormat;
+import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.junit.Before;
 
+import ch.lipsch.subs4j.TestConfig;
 import ch.lipsch.subsonic4j.SubsonicException;
+import ch.lipsch.subsonic4j.SubsonicFactory;
+import ch.lipsch.subsonic4j.SubsonicService;
+import ch.lipsch.subsonic4j.model.Artist;
+import ch.lipsch.subsonic4j.model.Directory;
+import ch.lipsch.subsonic4j.model.Index;
 
 public class RLServiceTest extends TestCase {
 
-	// private SubsonicService subsonicService;
+	private SubsonicService subsonicService;
 
 	@Override
 	@Before
 	public void setUp() throws MalformedURLException {
-		// subsonicService = SubsonicFactory.createService(new URL(
-		// TestConfig.SUBSONIC_URL), TestConfig.USER1_CREDENTIALS);
+		subsonicService = SubsonicFactory.createService(new URL(
+				TestConfig.SUBSONIC_URL), TestConfig.USER1_CREDENTIALS);
 	}
 
 	public void testTraverse() throws SubsonicException {
-		// TODO reactivate
-		throw new UnsupportedOperationException("TODO");
-		// List<Index> indexes = subsonicService.getIndexes(null, null);
-		//
-		// for (Index index : indexes) {
-		// for (Artist artist : index.getArtists()) {
-		// ch.lipsch.subsonic4j.model.Directory directory = subsonicService
-		// .getMusicDirectory(artist);
-		// System.out.println("Dir: " + directory.getName());
-		// for (Directory child : directory.getChildDirectories()) {
-		// System.out.println(MessageFormat.format("Child :{0} [{1}]",
-		// child.getAlbum(), child.getArtist()));
-		// }
-		// }
-		// }
+		List<Index> indexes = subsonicService.getIndexes(null, null);
+
+		for (Index index : indexes) {
+			for (Artist artist : index.getArtists()) {
+				ch.lipsch.subsonic4j.model.Directory directory = subsonicService
+						.getMusicDirectory(artist);
+				System.out.println("Dir: " + directory.getName());
+				for (Directory child : directory.getChildDirectories()) {
+					System.out.println(MessageFormat.format("Child :{0} [{1}]",
+							child.getName(), child.getId()));
+				}
+			}
+		}
 	}
 }
