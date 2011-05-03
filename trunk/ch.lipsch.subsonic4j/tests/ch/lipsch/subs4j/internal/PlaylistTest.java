@@ -18,51 +18,143 @@
  */
 package ch.lipsch.subs4j.internal;
 
-import static org.junit.Assert.fail;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import junit.framework.TestCase;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
-public class PlaylistTest {
+import ch.lipsch.subs4j.TestConfig;
+import ch.lipsch.subsonic4j.SubsonicFactory;
+import ch.lipsch.subsonic4j.SubsonicService;
+import ch.lipsch.subsonic4j.model.Playlist;
+import ch.lipsch.subsonic4j.model.Song;
+import ch.lipsch.subsonic4j.tools.PlaylistTool;
 
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		// TODO create a temporary playlist
+public class PlaylistTest extends TestCase {
+
+	private static SubsonicService subsonicService;
+
+	@Override
+	@Before
+	public void setUp() throws Exception {
+		subsonicService = SubsonicFactory.createService(new URL(
+				TestConfig.SUBSONIC_URL), TestConfig.USER1_CREDENTIALS);
 	}
 
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-		// TODO delete the temporary playlist.
+	@Override
+	@After
+	public void tearDown() throws Exception {
+		subsonicService.disposeService();
 	}
 
 	@Test
 	public void testGetName() {
-		fail("Not yet implemented");
+		List<Playlist> playLists = subsonicService.getPlayLists();
+		for (Playlist playlist : playLists) {
+			assertNotNull(playlist.getName());
+		}
 	}
 
 	@Test
 	public void testGetId() {
-		fail("Not yet implemented");
+		List<Playlist> playLists = subsonicService.getPlayLists();
+		for (Playlist playlist : playLists) {
+			assertNotNull(playlist.getId());
+		}
 	}
 
 	@Test
 	public void testGetSongs() {
-		fail("Not yet implemented");
+		List<Playlist> playLists = subsonicService.getPlayLists();
+		for (Playlist playlist : playLists) {
+			for (Song song : playlist.getSongs()) {
+				assertNotNull(song);
+			}
+		}
 	}
 
 	@Test
 	public void testAddSongs() {
-		fail("Not yet implemented");
+		Playlist playList = null;
+		try {
+			List<Song> randomSongs = subsonicService.getRandomSongs();
+
+			playList = subsonicService.createPlaylist("ASDFasdf",
+					Collections.singletonList(randomSongs.get(0)));
+
+			Song addedSong = null;
+			for (Song song : randomSongs) {
+				if (!(playList.getSongs().contains(song))) {
+					playList.addSongs(Collections.singletonList(song));
+					addedSong = song;
+					break;
+				}
+			}
+			if (addedSong == null) {
+				throw new IllegalStateException(
+						"No random songs which are not yet contained in the playlist");
+			}
+
+			playList = PlaylistTool.findPlaylistIdByName("ASDFasdf",
+					subsonicService);
+
+			assertTrue(playList.getSongs().contains(addedSong));
+		} finally {
+			playList.delete();
+		}
 	}
 
 	@Test
 	public void testRemoveSongs() {
-		fail("Not yet implemented");
+		Playlist playlist = null;
+		int initialNbrOfRndSongs = 3;
+		List<Song> randomSongs = new ArrayList<Song>();
+		try {
+			int i = 0;
+			for (Song song : subsonicService.getRandomSongs()) {
+				if (i < initialNbrOfRndSongs) {
+					randomSongs.add(song);
+					i++;
+				} else {
+					break;
+				}
+			}
+
+			playlist = subsonicService.createPlaylist("ASDFasdf", randomSongs);
+
+			int songCount = playlist.getSongs().size();
+
+			playlist.removeSongs(Collections.singletonList(playlist.getSongs()
+					.get(0)));
+
+			// Check the state of the local playlist
+			assertEquals(songCount - 1, playlist.getSongs().size());
+
+			// Refetch the playlist to check online state.
+			playlist = PlaylistTool.findPlaylistIdByName("ASDFasdf",
+					subsonicService);
+			assertEquals(songCount - 1, playlist.getSongs().size());
+		} finally {
+			playlist.delete();
+		}
 	}
 
 	@Test
-	public void testDeletePlaylist() {
-		fail("Not yet implemented");
+	public void testDelete() {
+		Playlist playlist = subsonicService.createPlaylist("ASDFasdf",
+				subsonicService.getRandomSongs());
+
+		playlist.delete();
+
+		playlist = PlaylistTool.findPlaylistIdByName("ASDFasdf",
+				subsonicService);
+
+		assertNull(playlist);
 	}
 }

@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.subsonic.restapi.PlaylistIdAndName;
 
+import ch.lipsch.subsonic4j.SubsonicException;
 import ch.lipsch.subsonic4j.SubsonicService;
 import ch.lipsch.subsonic4j.model.Playlist;
 import ch.lipsch.subsonic4j.model.Song;
@@ -61,25 +62,85 @@ public class PlayListImpl extends AbstractSubsonicModelObject implements
 	public synchronized List<Song> getSongs() {
 		if (songs == null) {
 			songs = new ArrayList<Song>();
-			songs.addAll(getService().getPlayList(getId()));
+			songs.addAll(getService().getPlaylistSongs(getId()));
 		}
 
 		return songs;
 	}
 
 	@Override
-	public void addSongs(List<Song> songs) {
-		throw new UnsupportedOperationException("Not yet implemented");
+	public void addSongs(List<Song> songsToAdd) {
+		synchronized (PlayListImpl.this) {
+			List<Song> defCopy = new ArrayList<Song>(getSongs());
+			defCopy.addAll(songsToAdd);
 
+			getService().createOrUpdatePlaylist(getId(), null, defCopy);
+			this.songs.addAll(songsToAdd);
+		}
 	}
 
 	@Override
 	public void removeSongs(List<Song> songs) {
-		throw new UnsupportedOperationException("Not yet implemented");
+		// Make a copy for checks before removing the songs.
+		List<Song> defCopy = new ArrayList<Song>(getSongs());
+
+		defCopy.removeAll(songs);
+
+		if (defCopy.isEmpty()) {
+			throw new IllegalStateException(
+					"Cannot remove all songs of a playlist");
+		} else {
+			synchronized (PlayListImpl.this) {
+				this.songs.removeAll(songs);
+			}
+		}
+		// TODO this should be done in the sync block. But it is a network
+		// call...
+
+		try {
+			getService().createOrUpdatePlaylist(getId(), null, getSongs());
+		} catch (SubsonicException e) {
+			// restore the original playlist
+			List<Song> playlistSongs = getService().getPlaylistSongs(getId());
+			synchronized (PlayListImpl.this) {
+				this.songs.clear();
+				this.songs.addAll(playlistSongs);
+			}
+			// TODO what should be done if the restore fails?
+			throw e;
+		}
 	}
 
 	@Override
-	public void deletePlaylist() {
-		throw new UnsupportedOperationException("Not yet implemented");
+	public void delete() {
+		getService().deletePlaylist(getId());
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (!(obj instanceof PlayListImpl)) {
+			return false;
+		} else {
+			PlayListImpl objPlaylist = (PlayListImpl) obj;
+			return objPlaylist.getId().equals(getId());
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		return 37 * getId().hashCode();
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder("Playlist (");
+		sb.append(getName());
+		sb.append(" / ");
+		sb.append(getId());
+		sb.append(")");
+		return sb.toString();
 	}
 }
