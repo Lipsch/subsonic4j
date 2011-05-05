@@ -58,4 +58,21 @@ public class SongImpl extends AbstractSubsonicModelObject implements Song {
 		return genre;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (!(obj instanceof SongImpl)) {
+			return false;
+		} else {
+			SongImpl objSong = (SongImpl) obj;
+			return objSong.getId().equals(getId());
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		return 37 * getId().hashCode();
+	}
 }
