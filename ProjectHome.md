@@ -1,0 +1,1 @@
+A library which provides easy access to the Subsonic REST API.
